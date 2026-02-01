@@ -2,34 +2,32 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Chess vs Stockfish</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Cờ vua vs Stockfish</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="game-container">
-        <div class="player-info top">
-            <img src="https://lichess1.org/assets/_6S08W2/images/v3/robot.svg" alt="bot-icon" class="avatar">
-            <div class="details">
-                <strong>Stockfish (Máy)</strong>
-                <span id="engine-status">Đang chờ...</span>
+        <div class="player-card">
+            <img src="https://lichess1.org/assets/_6S08W2/images/v3/robot.svg" class="avatar">
+            <div>
+                <div class="name">Stockfish (Máy)</div>
+                <div id="engine-status" class="status">Đang chờ...</div>
             </div>
         </div>
 
         <div id="myBoard"></div>
 
-        <div class="player-info bottom">
-            <img src="https://lichess1.org/assets/_6S08W2/images/v3/avatar/blank.svg" alt="user-icon" class="avatar">
-            <div class="details">
-                <strong>Bạn (Người chơi)</strong>
-                <span id="user-status">Đến lượt bạn</span>
+        <div class="player-card">
+            <img src="https://lichess1.org/assets/_6S08W2/images/v3/avatar/blank.svg" class="avatar">
+            <div>
+                <div class="name">Bạn (?)</div>
+                <div id="user-status" class="status">Đến lượt bạn</div>
             </div>
         </div>
 
-        <div class="controls">
-            <button id="resetBtn">Chơi ván mới</button>
-        </div>
+        <button id="resetBtn">Ván mới</button>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
