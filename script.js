@@ -1,53 +1,57 @@
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #262421; /* Màu nền tối như Lichess/Chess.com */
-    color: white;
-    margin: 0;
-    font-family: sans-serif;
+var board = null;
+var game = new Chess();
+var engine = new Worker('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
+
+function onDragStart(source, piece, position, orientation) {
+    if (game.game_over()) return false;
+    if (piece.search(/^b/) !== -1) return false; // Người chơi chỉ cầm quân Trắng
 }
 
-.game-container {
-    width: 450px;
+function makeEngineMove() {
+    engine.postMessage('position fen ' + game.fen());
+    engine.postMessage('go depth 12'); // Độ sâu tính toán của máy
+    $('#engine-status').text('Máy đang tính...');
 }
 
-.player-info {
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
+engine.onmessage = function(event) {
+    if (event.data.indexOf('bestmove') !== -1) {
+        var move = event.data.split(' ')[1];
+        game.move(move, { sloppy: true });
+        board.position(game.fen());
+        $('#engine-status').text('Đã đi xong');
+        $('#user-status').text('Đến lượt bạn');
+    }
+};
+
+function onDrop(source, target) {
+    var move = game.move({
+        from: source,
+        to: target,
+        promotion: 'q'
+    });
+
+    if (move === null) return 'snapback';
+
+    $('#user-status').text('Đã đi xong');
+    window.setTimeout(makeEngineMove, 250);
 }
 
-.avatar {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-    background: #333;
-    border-radius: 4px;
+function onSnapEnd() {
+    board.position(game.fen());
 }
 
-.details {
-    display: flex;
-    flex-direction: column;
-}
+var config = {
+    draggable: true,
+    position: 'start',
+    onDragStart: onDragStart,
+    onDrop: onDrop,
+    onSnapEnd: onSnapEnd
+};
 
-#myBoard {
-    border: 2px solid #555;
-    border-radius: 4px;
-    overflow: hidden;
-}
+// SỬA LỖI 1003: ID phải khớp hoàn toàn với HTML
+board = Chessboard('myBoard', config);
 
-.controls {
-    margin-top: 15px;
-    text-align: center;
-}
-
-#resetBtn {
-    padding: 10px 20px;
-    cursor: pointer;
-    background: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-}
+$('#resetBtn').on('click', function() {
+    game.reset();
+    board.start();
+});
