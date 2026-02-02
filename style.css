@@ -1,53 +1,51 @@
 body {
+    background-color: #2b2b2b;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #262421; /* Màu nền tối như Lichess/Chess.com */
-    color: white;
     margin: 0;
-    font-family: sans-serif;
 }
 
 .game-container {
-    width: 450px;
+    width: 400px;
 }
 
-.player-info {
+.player-card {
     display: flex;
     align-items: center;
-    padding: 10px 0;
+    padding: 10px;
+    background: #383838;
+    margin: 5px 0;
+    border-radius: 4px;
 }
 
 .avatar {
     width: 40px;
     height: 40px;
-    margin-right: 10px;
-    background: #333;
-    border-radius: 4px;
+    margin-right: 12px;
 }
 
-.details {
-    display: flex;
-    flex-direction: column;
-}
+.name { font-weight: bold; }
+.status { font-size: 0.85em; color: #aaa; }
 
 #myBoard {
-    border: 2px solid #555;
+    border: 3px solid #444;
     border-radius: 4px;
-    overflow: hidden;
-}
-
-.controls {
-    margin-top: 15px;
-    text-align: center;
 }
 
 #resetBtn {
-    padding: 10px 20px;
-    cursor: pointer;
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
     background: #4caf50;
     color: white;
     border: none;
     border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
 }
+
+#resetBtn:hover { background: #45a049; }
