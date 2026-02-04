@@ -1,40 +1,41 @@
 var board = null;
 var game = new Chess();
-var engine = new Worker('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
+var engine;
 
-// 1. Cấu hình Stockfish
-engine.postMessage('uci');
-engine.postMessage('isready');
+// Sửa lỗi Security bằng cách fetch script về trước
+fetch('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js')
+    .then(res => res.text())
+    .then(code => {
+        const blob = new Blob([code], { type: 'application/javascript' });
+        engine = new Worker(URL.createObjectURL(blob));
+        
+        engine.onmessage = function(event) {
+            if (event.data.includes('bestmove')) {
+                var move = event.data.split(' ')[1];
+                game.move(move, { sloppy: true });
+                board.position(game.fen());
+                $('#engine-status').text('Máy đã đi xong');
+                $('#user-status').text('Đến lượt bạn đi');
+            }
+        };
 
-engine.onmessage = function(event) {
-    if (event.data.indexOf('bestmove') !== -1) {
-        var move = event.data.split(' ')[1];
-        game.move(move, { sloppy: true });
-        board.position(game.fen());
-        $('#engine-status').text('Máy đã đi xong');
-        $('#user-status').text('Đến lượt bạn đi');
-    }
-};
-
-// 2. Hàm khi người chơi kéo thả quân cờ
-function onDrop(source, target) {
-    var move = game.move({
-        from: source,
-        to: target,
-        promotion: 'q'
+        engine.postMessage('uci');
+        engine.postMessage('isready');
     });
 
+function onDrop(source, target) {
+    var move = game.move({ from: source, to: target, promotion: 'q' });
     if (move === null) return 'snapback';
 
     $('#user-status').text('Đã đi xong');
     $('#engine-status').text('Máy đang suy nghĩ...');
     
-    // Yêu cầu Stockfish tính toán
-    engine.postMessage('position fen ' + game.fen());
-    engine.postMessage('go depth 12');
+    if (engine) {
+        engine.postMessage('position fen ' + game.fen());
+        engine.postMessage('go depth 12');
+    }
 }
 
-// 3. Khởi tạo Bàn cờ (Sửa lỗi 1003 bằng cách dùng đúng ID 'myBoard')
 var config = {
     draggable: true,
     position: 'start',
@@ -43,14 +44,12 @@ var config = {
 };
 board = Chessboard('myBoard', config);
 
-// 4. LOGIC NÚT VÁN MỚI (Reset toàn bộ)
 $('#resetBtn').on('click', function() {
-    game.reset(); // Reset logic chess.js
-    board.start(); // Reset hình ảnh bàn cờ
-    engine.postMessage('ucinewgame'); // Báo cho Stockfish ván mới
-    engine.postMessage('isready');
-    
+    game.reset();
+    board.start();
+    if (engine) {
+        engine.postMessage('ucinewgame');
+        engine.postMessage('isready');
+    }
     $('#user-status').text('Ván mới! Đến lượt bạn.');
-    $('#engine-status').text('Máy đang chờ...');
-    console.log("Đã làm mới ván đấu.");
 });
