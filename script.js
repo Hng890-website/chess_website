@@ -2,29 +2,50 @@ var board = null;
 var game = new Chess();
 var engine;
 
-// Kỹ thuật Blob để giải quyết lỗi SecurityError (Cross-Origin)
-fetch('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js')
-    .then(response => response.text())
-    .then(code => {
-        const blob = new Blob([code], { type: 'application/javascript' });
-        const workerUrl = URL.createObjectURL(blob);
-        engine = new Worker(workerUrl);
+// Hàm tạo Worker cho Stockfish với fallback an toàn
+function createStockfishWorker() {
+    const url = 'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js';
 
-        // Khởi tạo các giao thức Stockfish sau khi Worker nạp xong
-        engine.onmessage = function(event) {
-            if (event.data.includes('bestmove')) {
-                const move = event.data.split(' ')[1];
-                game.move(move, { sloppy: true }); // Máy thực hiện nước đi
-                board.position(game.fen());        // Cập nhật bàn cờ
-                $('#engine-status').text('Máy đã đi xong');
-                $('#user-status').text('Đến lượt bạn đi');
-            }
-        };
+    // Thử tạo Worker trực tiếp từ URL (yêu cầu CDN cho phép CORS)
+    try {
+        return new Worker(url);
+    } catch (e) {
+        // Nếu bị SecurityError, tạo một Blob cùng gốc chứa importScripts để tải script từ CDN
+        try {
+            const blob = new Blob([`importScripts('${url}');`], { type: 'application/javascript' });
+            const workerUrl = URL.createObjectURL(blob);
+            return new Worker(workerUrl);
+        } catch (err) {
+            console.error('Không thể tạo Stockfish worker:', err);
+            return null;
+        }
+    }
+}
 
-        engine.postMessage('uci');
-        engine.postMessage('isready');
-    })
-    .catch(err => console.error("Không thể tải Stockfish:", err));
+// Khởi tạo engine (Worker)
+engine = createStockfishWorker();
+
+if (engine) {
+    // Khởi tạo các giao thức Stockfish sau khi Worker nạp xong
+    engine.onmessage = function(event) {
+        if (typeof event.data === 'string' && event.data.includes('bestmove')) {
+            const move = event.data.split(' ')[1];
+            game.move(move, { sloppy: true }); // Máy thực hiện nước đi
+            board.position(game.fen());        // Cập nhật bàn cờ
+            $('#engine-status').text('Máy đã đi xong');
+            $('#user-status').text('Đến lượt bạn đi');
+        } else if (typeof event.data === 'string' && event.data.includes('readyok')) {
+            // optional: handle readyok
+            // console.log('Stockfish ready');
+        }
+    };
+
+    engine.postMessage('uci');
+    engine.postMessage('isready');
+} else {
+    console.error('Engine không khả dụng. Kiểm tra CORS / CSP hoặc thử chạy trên một server (không phải file://).');
+    $('#engine-status').text('Engine không khả dụng');
+}
 
 // Hàm xử lý khi người chơi kéo quân
 function onDrop(source, target) {
