@@ -1,7 +1,7 @@
 body {
-    background-color: #2b2b2b;
-    color: white;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #161512;
+    color: #bababa;
+    font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,8 +16,8 @@ body {
 .player-card {
     display: flex;
     align-items: center;
+    background-color: #262421;
     padding: 10px;
-    background: #383838;
     margin: 5px 0;
     border-radius: 4px;
 }
@@ -28,24 +28,27 @@ body {
     margin-right: 12px;
 }
 
-.name { font-weight: bold; }
-.status { font-size: 0.85em; color: #aaa; }
+.name { color: #fff; font-weight: bold; }
+.status { font-size: 0.8em; color: #8b8b8b; }
 
 #myBoard {
-    border: 3px solid #444;
-    border-radius: 4px;
+    border: 2px solid #3c3c3c;
+    border-radius: 3px;
 }
 
 #resetBtn {
     width: 100%;
     margin-top: 15px;
-    padding: 10px;
-    background: #4caf50;
+    padding: 12px;
+    background-color: #45a049;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    transition: background 0.2s;
 }
 
-#resetBtn:hover { background: #45a049; }
+#resetBtn:hover {
+    background-color: #52be56;
+}
