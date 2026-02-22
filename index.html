@@ -29,33 +29,36 @@
     </header>
 
     <main>
-        <div class="game-container">
-            <div class="player-section engine-side">
-                <div class="avatar-wrapper">
-                    <img src="https://lichess1.org/assets/_6S08W2/images/v3/robot.svg" alt="Bot">
+        <div class="main-layout">
+            <div class="game-area">
+                <div class="player-section engine-side">
+                    <img src="https://lichess1.org/assets/_6S08W2/images/v3/robot.svg" class="avatar">
+                    <div class="player-details">
+                        <span class="player-name" data-i18n="bot_name">Stockfish AI</span>
+                        <span id="engine-status" class="game-hint" data-i18n="engine_ready">Máy đã sẵn sàng!</span>
+                    </div>
                 </div>
-                <div class="player-details">
-                    <span class="player-name" data-i18n="bot_name">Stockfish AI <small>Level 10</small></span>
-                    <span id="engine-status" class="game-hint" data-i18n="engine_ready">Máy đã sẵn sàng!</span>
+
+                <div id="myBoard" class="styled-board"></div>
+
+                <div class="player-section user-side">
+                    <img src="https://lichess1.org/assets/_6S08W2/images/v3/avatar/blank.svg" class="avatar">
+                    <div class="player-details">
+                        <span class="player-name" data-i18n="user_name">Người chơi (Trắng)</span>
+                        <span id="user-status" class="game-hint" data-i18n="user_turn">Tới lượt bạn đi</span>
+                    </div>
                 </div>
             </div>
 
-            <div id="myBoard" class="styled-board"></div>
-
-            <div class="player-section user-side">
-                <div class="avatar-wrapper">
-                    <img src="https://lichess1.org/assets/_6S08W2/images/v3/avatar/blank.svg" alt="User">
+            <div class="move-history-container">
+                <div class="history-header" data-i18n="move_history">Lịch sử nước đi</div>
+                <div id="move-history" class="history-list">
+                    </div>
+                <div class="action-bar">
+                    <button id="resetBtn" class="btn-primary">
+                        <i class="fas fa-undo"></i> <span data-i18n="new_game">Ván mới</span>
+                    </button>
                 </div>
-                <div class="player-details">
-                    <span class="player-name" data-i18n="user_name">Người chơi (Trắng)</span>
-                    <span id="user-status" class="game-hint" data-i18n="user_turn">Tới lượt bạn đi</span>
-                </div>
-            </div>
-
-            <div class="action-bar">
-                <button id="resetBtn" class="btn-primary">
-                    <i class="fas fa-undo"></i> <span data-i18n="new_game">Ván mới</span>
-                </button>
             </div>
         </div>
     </main>
@@ -70,10 +73,6 @@
                     <option value="fr">Français</option>
                     <option value="jp">日本語</option>
                 </select>
-                <div class="social-links">
-                    <i class="fab fa-github"></i>
-                    <i class="fab fa-discord"></i>
-                </div>
             </div>
         </div>
     </footer>
