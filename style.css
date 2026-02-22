@@ -1,54 +1,32 @@
 body {
     background-color: #161512;
-    color: #bababa;
-    font-family: Arial, sans-serif;
+    color: white;
+    font-family: sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
 }
-
-.game-container {
-    width: 400px;
-}
-
+.game-container { width: 400px; }
 .player-card {
     display: flex;
     align-items: center;
-    background-color: #262421;
     padding: 10px;
+    background: #262421;
     margin: 5px 0;
     border-radius: 4px;
 }
-
-.avatar {
-    width: 40px;
-    height: 40px;
-    margin-right: 12px;
-}
-
-.name { color: #fff; font-weight: bold; }
+.avatar { width: 40px; height: 40px; margin-right: 12px; }
 .status { font-size: 0.8em; color: #8b8b8b; }
-
-#myBoard {
-    border: 2px solid #3c3c3c;
-    border-radius: 3px;
-}
-
+#myBoard { border: 2px solid #3c3c3c; }
 #resetBtn {
     width: 100%;
     margin-top: 15px;
     padding: 12px;
-    background-color: #45a049;
+    background: #45a049;
     color: white;
     border: none;
-    border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
-    transition: background 0.2s;
-}
-
-#resetBtn:hover {
-    background-color: #52be56;
 }
