@@ -3,33 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess vs Stockfish</title>
-    <link rel="icon" href="data:,"> <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <title>Grandmaster Chess | Play Stockfish</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="game-container">
-        <div class="player-card">
-            <img src="https://lichess1.org/assets/_6S08W2/images/v3/robot.svg" class="avatar">
-            <div class="info">
-                <div class="name">Stockfish (Máy)</div>
-                <div id="engine-status" class="status">Sẵn sàng</div>
+    <header>
+        <div class="header-content">
+            <div class="logo"><i class="fas fa-chess-knight"></i> GM CHESS</div>
+            <nav>
+                <span><i class="fas fa-trophy"></i> Đấu hạng</span>
+                <span><i class="fas fa-graduation-cap"></i> Học tập</span>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="game-container">
+            <div class="player-section engine-side">
+                <div class="avatar-wrapper">
+                    <img src="https://lichess1.org/assets/_6S08W2/images/v3/robot.svg" alt="Bot">
+                </div>
+                <div class="player-details">
+                    <span class="player-name">Stockfish AI <small>Level 10</small></span>
+                    <span id="engine-status" class="game-hint">Đang đợi bạn khai cuộc...</span>
+                </div>
+            </div>
+
+            <div id="myBoard" class="styled-board"></div>
+
+            <div class="player-section user-side">
+                <div class="avatar-wrapper">
+                    <img src="https://lichess1.org/assets/_6S08W2/images/v3/avatar/blank.svg" alt="User">
+                </div>
+                <div class="player-details">
+                    <span class="player-name">Người chơi (Trắng)</span>
+                    <span id="user-status" class="game-hint">Tới lượt bạn đi</span>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button id="resetBtn" class="btn-primary"><i class="fas fa-undo"></i> Ván mới</button>
             </div>
         </div>
+    </main>
 
-        <div id="myBoard"></div>
-
-        <div class="player-card">
-            <img src="https://lichess1.org/assets/_6S08W2/images/v3/avatar/blank.svg" class="avatar">
-            <div class="info">
-                <div class="name">Bạn (?)</div>
-                <div id="user-status" class="status">Đến lượt bạn đi</div>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Powered by Stockfish Engine | Developed by HNG890</p>
+            <div class="social-links">
+                <i class="fab fa-github"></i>
+                <i class="fab fa-discord"></i>
             </div>
         </div>
-
-        <button id="resetBtn">Ván mới</button>
-    </div>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
