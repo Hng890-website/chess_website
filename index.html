@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grandmaster Chess | Play Stockfish</title>
+    <title>Grandmaster Chess AI</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -15,8 +15,15 @@
         <div class="header-content">
             <div class="logo"><i class="fas fa-chess-knight"></i> GM CHESS</div>
             <nav>
-                <span><i class="fas fa-trophy"></i> Đấu hạng</span>
-                <span><i class="fas fa-graduation-cap"></i> Học tập</span>
+                <div class="lang-container">
+                    <i class="fas fa-globe"></i>
+                    <select id="lang-select-header" class="lang-switch">
+                        <option value="vi">Tiếng Việt</option>
+                        <option value="en">English</option>
+                        <option value="fr">Français</option>
+                        <option value="jp">日本語</option>
+                    </select>
+                </div>
             </nav>
         </div>
     </header>
@@ -28,8 +35,8 @@
                     <img src="https://lichess1.org/assets/_6S08W2/images/v3/robot.svg" alt="Bot">
                 </div>
                 <div class="player-details">
-                    <span class="player-name">Stockfish AI <small>Level 10</small></span>
-                    <span id="engine-status" class="game-hint">Đang đợi bạn khai cuộc...</span>
+                    <span class="player-name" data-i18n="bot_name">Stockfish AI <small>Level 10</small></span>
+                    <span id="engine-status" class="game-hint" data-i18n="engine_ready">Máy đã sẵn sàng!</span>
                 </div>
             </div>
 
@@ -40,23 +47,33 @@
                     <img src="https://lichess1.org/assets/_6S08W2/images/v3/avatar/blank.svg" alt="User">
                 </div>
                 <div class="player-details">
-                    <span class="player-name">Người chơi (Trắng)</span>
-                    <span id="user-status" class="game-hint">Tới lượt bạn đi</span>
+                    <span class="player-name" data-i18n="user_name">Người chơi (Trắng)</span>
+                    <span id="user-status" class="game-hint" data-i18n="user_turn">Tới lượt bạn đi</span>
                 </div>
             </div>
 
             <div class="action-bar">
-                <button id="resetBtn" class="btn-primary"><i class="fas fa-undo"></i> Ván mới</button>
+                <button id="resetBtn" class="btn-primary">
+                    <i class="fas fa-undo"></i> <span data-i18n="new_game">Ván mới</span>
+                </button>
             </div>
         </div>
     </main>
 
     <footer>
         <div class="footer-content">
-            <p>&copy; 2024 Powered by Stockfish Engine | Developed by HNG890</p>
-            <div class="social-links">
-                <i class="fab fa-github"></i>
-                <i class="fab fa-discord"></i>
+            <p id="footer-text" data-i18n="footer">&copy; 2026 Powered by Stockfish Engine | Developed by HNG890</p>
+            <div class="footer-bottom">
+                <select id="lang-select-footer" class="lang-switch">
+                    <option value="vi">Tiếng Việt</option>
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="jp">日本語</option>
+                </select>
+                <div class="social-links">
+                    <i class="fab fa-github"></i>
+                    <i class="fab fa-discord"></i>
+                </div>
             </div>
         </div>
     </footer>
