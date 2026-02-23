@@ -1,57 +1,41 @@
-:root {
-    --bg-main: #161512;
-    --bg-card: #262421;
-    --accent: #81b64c;
-    --text-main: #bababa;
-    --text-light: #ffffff;
-}
-
-body {
-    background-color: var(--bg-main);
-    color: var(--text-main);
-    font-family: Arial, sans-serif;
-    margin: 0; display: flex; flex-direction: column; min-height: 100vh;
-}
+:root { --bg: #161512; --card: #262421; --green: #81b64c; --text: #bababa; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; }
 
 header { background: #1f1e1b; padding: 10px 20px; border-bottom: 1px solid #333; }
-.header-content { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-.logo { font-size: 1.4rem; font-weight: bold; color: var(--accent); }
+.header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 1.5rem; color: var(--green); font-weight: bold; }
+.nav-btn { background: #333; color: white; border: 1px solid #444; padding: 6px 15px; border-radius: 4px; cursor: pointer; margin-left: 10px; }
+.nav-btn.premium { background: var(--green); border: none; font-weight: bold; }
 
-.nav-btn { background: none; border: 1px solid #444; color: white; padding: 6px 12px; margin-left: 10px; border-radius: 4px; cursor: pointer; }
-.nav-btn.premium { background: var(--accent); border: none; font-weight: bold; }
-
-/* LAYOUT: Đảm bảo bảng lịch sử ở bên phải */
-.main-layout {
-    display: flex; flex-direction: row; gap: 20px; justify-content: center;
-    padding: 20px; flex-wrap: nowrap; /* Không cho phép xuống hàng trên desktop */
-}
-
+.main-layout { display: flex; justify-content: center; gap: 20px; padding: 20px; flex-wrap: nowrap; }
 .game-area { width: 450px; }
-.side-panel { width: 300px; display: flex; flex-direction: column; gap: 10px; }
 
-/* BẢNG LỊCH SỬ */
-.move-history-container {
-    background: #21201d; border-radius: 8px; border: 1px solid #333; height: 500px; display: flex; flex-direction: column;
-}
+/* Bảng lịch sử bên phải */
+.side-panel { width: 280px; display: flex; flex-direction: column; gap: 10px; }
+.history-container { background: #21201d; border: 1px solid #333; height: 500px; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; }
+.history-header { background: #2d2b28; padding: 10px; text-align: center; font-weight: bold; color: white; }
 .history-list { flex: 1; overflow-y: auto; display: grid; grid-template-columns: 40px 1fr 1fr; font-size: 0.9rem; padding: 5px; }
-.move-item { padding: 4px 8px; color: #ccc; cursor: pointer; }
-.move-item.active { background: #3d3a37; color: #fff; font-weight: bold; }
-
-.history-nav { display: flex; background: #2d2b28; border-top: 1px solid #333; }
+.move-num { color: #666; background: #1a1917; text-align: center; padding: 5px 0; border-bottom: 1px solid #222; }
+.move-item { padding: 5px 10px; color: #ccc; border-bottom: 1px solid #222; }
+.history-nav { display: flex; background: #2d2b28; }
 .history-nav button { flex: 1; padding: 10px; background: none; border: none; color: white; cursor: pointer; }
-.history-nav button:disabled { color: #555; cursor: not-allowed; }
-.history-nav button:hover:not(:disabled) { background: #3d3a37; }
 
-/* HÌNH TRÒN GỢI Ý */
+/* Chấm tròn gợi ý nước đi */
 .suggest-dot {
-    width: 25%; height: 25%; background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%; margin: 37.5%; pointer-events: none;
+    width: 30%; height: 30%; background: rgba(0, 0, 0, 0.2); 
+    border-radius: 50%; position: absolute; top: 35%; left: 35%; pointer-events: none;
 }
-.highlight-hint { background-color: rgba(255, 255, 0, 0.5) !important; }
 .highlight-selected { background-color: rgba(129, 182, 76, 0.5) !important; }
+.highlight-hint { background-color: rgba(255, 255, 0, 0.5) !important; }
 
-.btn-primary, .btn-secondary { padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 5px; }
-.btn-primary { background: var(--accent); color: white; }
-.btn-secondary { background: #3d3a37; color: white; }
+.player-card { display: flex; align-items: center; background: var(--card); padding: 10px; margin: 5px 0; border-radius: 4px; }
+.avatar { width: 40px; height: 40px; margin-right: 12px; }
+.name { display: block; color: white; font-weight: bold; }
+.status { font-size: 0.8rem; color: #888; }
+.styled-board { border: 5px solid #312e2b; cursor: pointer; }
 
-footer { text-align: center; padding: 20px; font-size: 0.8rem; border-top: 1px solid #333; }
+.control-btns { display: flex; flex-direction: column; gap: 5px; }
+.btn-pri { background: var(--green); color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.btn-sec { background: #3d3a37; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; }
+
+footer { text-align: center; padding: 20px; font-size: 0.8rem; opacity: 0.5; }
