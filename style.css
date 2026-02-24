@@ -1,68 +1,250 @@
+:root {
+    --primary: #81b64c;
+    --primary-hover: #a3d16a;
+    --dark-bg: #161512;
+    --card-bg: #262421;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #f1f1f1;
+    --text-dim: #999;
+}
+
+/* Base & Reset */
 body {
-    background: #161512;
-    color: white;
+    background-color: var(--dark-bg);
+    background-image: radial-gradient(circle at 50% 50%, #2c2e33 0%, #161512 100%);
+    color: var(--text-main);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
+    min-height: 100vh;
+    display: flex; /* Dùng flex cho body để footer luôn ở cuối */
+    flex-direction: column;
+}
+
+/* Home Screen & Glassmorphism */
+#home-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: url('https://images.unsplash.com/photo-1529697210530-8c4bb1358ea7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
     display: flex;
+    align-items: center;
     justify-content: center;
-    padding-top: 50px;
-    font-family: Arial, sans-serif;
 }
-
-.main-wrapper {
-    display: flex;
-    gap: 20px;
-    max-width: 1000px;
-    width: 95%;
+#home-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
 }
-
-/* FIX LỖI VỠ BÀN CỜ */
-.board-container {
-    flex: 1;
-    max-width: 600px; /* Giới hạn độ lớn tối đa */
-    min-width: 320px;
+.glass-panel {
+    position: relative;
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    padding: 50px;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    text-align: center;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
 }
-
-#myBoard {
-    width: 100% !important;
-    aspect-ratio: 1 / 1; /* Ép bàn cờ luôn là hình vuông */
+.home-logo { font-size: 3.5rem; color: var(--primary); font-weight: 800; letter-spacing: -2px; }
+.subtitle { color: var(--text-dim); margin-bottom: 30px; letter-spacing: 2px; }
+.home-menu { display: flex; flex-direction: column; gap: 15px; width: 300px; margin: 0 auto; }
+.btn-main {
+    width: 100%; padding: 15px 30px; border: none; border-radius: 10px;
+    font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.3s;
 }
+.btn-main.play { background: var(--primary); color: white; }
+.btn-main.play:hover { background: var(--primary-hover); transform: translateY(-3px); }
+.btn-main.auth { background: #3d3a37; color: white; }
+.btn-main.auth:hover { background: #555; transform: translateY(-3px); }
 
-/* Ép quân cờ phải nhỏ lại theo ô vuông */
-.chessboard-63f59 img {
-    width: 100% !important;
-    height: 100% !important;
-    display: block;
+/* Modal Login */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; }
+.modal-content {
+    width: 350px; margin: 15vh auto; padding: 40px; text-align: center;
+    background: var(--card-bg); border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;
 }
-
-/* Các ô vuông */
-.square-55d63 {
-    position: relative !important;
+.modal-content h3 { color: white; margin-top: 0; margin-bottom: 30px; }
+.input-group {
+    background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;
+    margin: 20px 0; display: flex; align-items: center;
+    border: 1px solid rgba(255,255,255,0.1);
 }
+.input-group i { color: var(--text-dim); margin-right: 10px; }
+.input-group input {
+    background: none; border: none; color: white; padding-left: 0; width: 100%; outline: none;
+    font-size: 1rem;
+}
+.btn-glow {
+    background: var(--primary); color: white; border: none; padding: 12px 25px;
+    border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;
+    box-shadow: 0 5px 15px rgba(129, 182, 76, 0.4);
+    width: 100%; margin-top: 10px;
+}
+.btn-glow:hover { background: var(--primary-hover); box-shadow: 0 8px 20px rgba(129, 182, 76, 0.6); }
+.close-link { color: var(--text-dim); font-size: 0.9rem; margin-top: 15px; display: block; cursor: pointer; }
+.close-link:hover { color: white; }
 
-/* Side Panel */
-.side-panel {
-    width: 300px;
-    background: #262421;
-    padding: 15px;
-    border-radius: 4px;
+/* App Container */
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    flex: 1; /* Đảm bảo app-container giãn ra để đẩy footer xuống cuối */
     display: flex;
     flex-direction: column;
 }
 
-.history-box {
-    flex: 1;
-    background: #1a1917;
-    margin-bottom: 10px;
-    overflow-y: auto;
-    padding: 10px;
-    font-size: 14px;
+/* Header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 20px;
+}
+.logo-text { font-size: 1.8rem; font-weight: 800; }
+.logo-text span { color: var(--primary); }
+.user-status { display: flex; align-items: center; gap: 15px; }
+.login-trigger {
+    background: none; border: 1px solid var(--primary); color: var(--primary);
+    padding: 8px 15px; border-radius: 5px; cursor: pointer; transition: 0.2s;
+}
+.login-trigger:hover { background: var(--primary); color: white; }
+.logged-user { color: var(--primary); font-weight: bold; font-size: 1rem; }
+
+/* Game Layout */
+.game-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px; /* Chia 2 cột: bàn cờ và sidebar */
+    gap: 40px;
+    flex: 1; /* Giúp game-layout giãn nở */
 }
 
-#resetBtn {
-    padding: 10px;
-    background: #81b64c;
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
+/* Board Section */
+.board-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Căn giữa bàn cờ */
+}
+
+/* Player Bar */
+.player-bar {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: var(--card-bg);
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 500px; /* Đảm bảo player bar không quá rộng */
+}
+.player-bar img {
+    width: 40px; height: 40px; border-radius: 4px; margin-right: 15px;
+    background: #333; object-fit: cover;
+}
+.player-meta { flex-grow: 1; }
+.p-name { display: block; font-weight: bold; }
+.p-rating { font-size: 0.8rem; color: var(--text-dim); }
+
+/* Bàn cờ hiện đại */
+#myBoard {
+    width: 100%;
+    max-width: 500px; /* Giới hạn kích thước bàn cờ */
+    aspect-ratio: 1 / 1; /* Ép bàn cờ luôn là hình vuông */
+    border: 8px solid var(--card-bg);
+    border-radius: 4px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    background-color: #e8eddf; /* Màu ô sáng */
+}
+
+/* Fix lỗi quân cờ tràn và click */
+.chessboard-63f59 img {
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important; /* Buộc chuột click xuyên qua ảnh quân cờ */
+}
+.square-55d63 {
+    position: relative !important;
+    touch-action: none; /* Fix cho thiết bị di động */
+}
+
+/* Highlight & Dot */
+.highlight-selected { background-color: rgba(129, 182, 76, 0.5) !important; }
+.suggest-dot {
+    width: 25%; height: 25%; background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%; position: absolute; top: 37.5%; left: 37.5%;
+    pointer-events: none; z-index: 10;
+}
+
+/* Control Section (Sidebar) */
+.glass-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.card-header {
+    background: rgba(255,255,255,0.05); padding: 15px; text-align: center;
+    font-weight: bold; font-size: 0.8rem; letter-spacing: 1px;
+    color: var(--primary);
+}
+.move-list {
+    height: 400px; /* Chiều cao cố định */
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr;
+    font-family: 'Consolas', monospace;
+    font-size: 0.9rem;
+    padding: 10px 0;
+}
+.move-list div { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+.move-list div:nth-child(3n+1) { color: var(--text-dim); text-align: center; } /* Số thứ tự */
+.move-list div:hover { background: rgba(255,255,255,0.05); cursor: pointer; }
+
+.history-footer { display: flex; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.05); }
+.history-footer .nav-btn {
+    flex: 1; padding: 10px; border: none; background: none; color: white; cursor: pointer;
+    font-size: 1.1rem; transition: 0.2s;
+}
+.history-footer .nav-btn:hover { background: rgba(255,255,255,0.1); }
+.history-footer .nav-btn:disabled { color: #555; cursor: not-allowed; }
+
+.action-buttons { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+.btn-action {
+    padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s;
+    font-size: 1rem;
+}
+.btn-action.primary { background: var(--primary); color: white; }
+.btn-action.primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+.btn-action.secondary { background: #3d3a37; color: white; }
+.btn-action.secondary:hover { background: #555; transform: translateY(-2px); }
+
+/* Footer */
+.main-footer {
+    padding: 20px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: auto; /* Đẩy footer xuống cuối */
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+    .game-layout {
+        grid-template-columns: 1fr; /* 1 cột trên màn hình nhỏ */
+        gap: 20px;
+    }
+    .board-section { order: 1; } /* Đẩy bàn cờ lên trên */
+    .control-section { order: 2; width: 100%; }
+    .main-header { padding: 15px; }
+    .player-bar { max-width: 100%; }
+    #myBoard { max-width: 100%; }
 }
