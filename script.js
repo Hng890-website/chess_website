@@ -4,25 +4,34 @@ var game = new Chess();
 var selectedSquare = null;
 var engine = null;
 
-// --- KHỞI TẠO ENGINE (FIX LỖI DÒNG 26) ---
-try {
-    // Sử dụng link worker trực tiếp để tránh lỗi Reference
-    engine = new Worker('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
-    
-    engine.onmessage = function(event) {
-        var line = event.data;
-        if (line.indexOf('bestmove') > -1) {
-            var match = line.match(/bestmove\s([a-h][1-8])([a-h][1-8])(q|r|b|n)?/);
-            if (match) {
-                makeMove({ from: match[1], to: match[2], promotion: match[3] || 'q' });
+// --- KỸ THUẬT VƯỢT RÀO CORS CHO STOCKFISH ---
+async function initStockfish() {
+    try {
+        const response = await fetch('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
+        const script = await response.text();
+        const blob = new Blob([script], { type: 'application/javascript' });
+        const workerUrl = URL.createObjectURL(blob);
+        
+        engine = new Worker(workerUrl);
+        
+        engine.onmessage = function(event) {
+            var line = event.data;
+            if (line.indexOf('bestmove') > -1) {
+                var match = line.match(/bestmove\s([a-h][1-8])([a-h][1-8])(q|r|b|n)?/);
+                if (match) {
+                    makeMove({ from: match[1], to: match[2], promotion: match[3] || 'q' });
+                }
             }
-        }
-    };
-    engine.postMessage('uci');
-} catch (e) {
-    console.error("Worker lỗi, chuyển sang chế độ đánh ngẫu nhiên:", e);
+        };
+        engine.postMessage('uci');
+        console.log("Stockfish đã sẵn sàng qua kỹ thuật Blob!");
+    } catch (e) {
+        console.error("Vẫn không thể khởi tạo Stockfish:", e);
+    }
 }
 
+// Gọi hàm khởi tạo ngay lập tức
+initStockfish();
 // --- CÁC HÀM GIAO DIỆN (Đưa lên đầu để tránh lỗi "not defined") ---
 function openLogin() { $('#loginModal').fadeIn(300); }
 function closeLogin() { $('#loginModal').fadeOut(300); }
