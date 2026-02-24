@@ -3,50 +3,91 @@ var game = new Chess();
 var engine;
 var selectedSquare = null;
 
-// HỆ THỐNG ÂM THANH - Sử dụng link trực tiếp ổn định hơn
-// HỆ THỐNG ÂM THANH - Link từ Lichess (Ổn định và không bị chặn)
-const sounds = {
-    move: new Audio('https://lichess1.org/assets/sound/standard/Move.ogg'),
-    capture: new Audio('https://lichess1.org/assets/sound/standard/Capture.ogg'),
-    check: new Audio('https://lichess1.org/assets/sound/standard/Check.ogg'),
-    gameStart: new Audio('https://lichess1.org/assets/sound/standard/GenericNotify.ogg'),
-    gameEnd: new Audio('https://lichess1.org/assets/sound/standard/Victory.ogg')
+// HỆ THỐNG ÂM THANH - Dùng link cực kỳ phổ biến và thêm xử lý lỗi
+const soundSources = {
+    move: 'https://actions.google.com/sounds/v1/cartoon/clink_clank.ogg', // Tiếng cộp
+    capture: 'https://actions.google.com/sounds/v1/foley/wood_plank_flick.ogg', // Tiếng ăn quân
+    check: 'https://actions.google.com/sounds/v1/alarms/beep_short.ogg', // Tiếng chiếu
+    gameStart: 'https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg', // Khởi đầu
+    gameEnd: 'https://actions.google.com/sounds/v1/human/applause.ogg' // Kết thúc
 };
 
-// Hàm "Mồi" âm thanh (Cần thiết để trình duyệt cấp quyền)
+const sounds = {};
+
+// Khởi tạo âm thanh an toàn
+Object.keys(soundSources).forEach(key => {
+    sounds[key] = new Audio(soundSources[key]);
+    // Fix lỗi "No supported sources" bằng cách bắt lỗi load
+    sounds[key].addEventListener('error', function(e) {
+        console.warn(`Không tải được âm thanh ${key}, kiểm tra kết nối mạng hoặc link.`);
+    });
+});
+
+// Hàm mồi âm thanh (BẮT BUỘC)
 function unlockAudio() {
+    console.log("Đang mở khóa âm thanh...");
     Object.values(sounds).forEach(sound => {
-        sound.play().then(() => {
-            sound.pause();
-            sound.currentTime = 0;
-        }).catch(e => console.log("Audio unlock chờ tương tác..."));
+        const playPromise = sound.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                sound.pause();
+                sound.currentTime = 0;
+            }).catch(error => {
+                // Trình duyệt chặn là bình thường, sẽ hết sau click đầu tiên
+            });
+        }
     });
 }
 
-// Hàm phát âm thanh thông minh
-function playMoveSound(moveResult) {
+// Hàm phát âm thanh (Đã bọc trong Try-Catch)
+function playSound(type) {
     try {
-        let soundToPlay = sounds.move;
-
-        if (game.in_checkmate() || game.in_draw()) {
-            soundToPlay = sounds.gameEnd;
-        } else if (game.in_check()) {
-            soundToPlay = sounds.check;
-        } else if (moveResult.flags.includes('c') || moveResult.flags.includes('e')) {
-            soundToPlay = sounds.capture;
-        }
-
-        // Phát âm thanh
-        soundToPlay.currentTime = 0;
-        const playPromise = soundToPlay.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                console.warn("Âm thanh bị chặn bởi trình duyệt, cần click vào trang web trước.");
-            });
+        const s = sounds[type];
+        if (s && s.readyState >= 2) { // Chỉ phát nếu đã load xong dữ liệu tối thiểu
+            s.currentTime = 0;
+            s.play().catch(e => console.error("Trình duyệt chặn phát:", e));
         }
     } catch (e) {
-        console.error("Lỗi âm thanh:", e);
+        console.error("Lỗi phát âm thanh:", e);
+    }
+}
+
+// Cập nhật hàm makeMove
+function makeMove(moveStr) {
+    const move = game.move(moveStr, { sloppy: true });
+    if (!move) return false;
+
+    // Logic chọn loại âm thanh
+    if (game.in_checkmate()) playSound('gameEnd');
+    else if (game.in_check()) playSound('check');
+    else if (move.flags.includes('c')) playSound('capture');
+    else playSound('move');
+
+    board.position(game.fen());
+    updateHistoryUI();
+    removeHighlights();
+
+    if (game.turn() === 'b' && !game.game_over()) {
+        engine.postMessage(`position fen ${game.fen()}`);
+        engine.postMessage('go depth 12');
+    }
+    return true;
+}
+
+// Gắn unlockAudio vào các nút tương tác
+function startGame() {
+    unlockAudio();
+    $('#home-screen').fadeOut(500);
+    setTimeout(() => playSound('gameStart'), 300);
+}
+
+function handleLogin() {
+    const user = $('#username').val();
+    if (user) {
+        unlockAudio();
+        $('#nav-auth-zone').html(`<span class="user-logged-in">♟ ${user}</span>`);
+        closeLogin();
+        if($('#home-screen').is(':visible')) startGame();
     }
 }
 // Khởi tạo Stockfish
