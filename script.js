@@ -1,128 +1,113 @@
-// --- KHAI BÁO BIẾN TOÀN CỤC ---
 var board = null;
 var game = new Chess();
 var selectedSquare = null;
-var engine = null;
+var peer = null;
+var conn = null;
+var isOnline = false;
+var myColor = 'w';
 
-// --- KỸ THUẬT VƯỢT RÀO CORS CHO STOCKFISH ---
-async function initStockfish() {
-    try {
-        const response = await fetch('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
-        const script = await response.text();
-        const blob = new Blob([script], { type: 'application/javascript' });
-        const workerUrl = URL.createObjectURL(blob);
-        
-        engine = new Worker(workerUrl);
-        
-        engine.onmessage = function(event) {
-            var line = event.data;
-            if (line.indexOf('bestmove') > -1) {
-                var match = line.match(/bestmove\s([a-h][1-8])([a-h][1-8])(q|r|b|n)?/);
-                if (match) {
-                    makeMove({ from: match[1], to: match[2], promotion: match[3] || 'q' });
-                }
-            }
-        };
-        engine.postMessage('uci');
-        console.log("Stockfish đã sẵn sàng qua kỹ thuật Blob!");
-    } catch (e) {
-        console.error("Vẫn không thể khởi tạo Stockfish:", e);
-    }
+// --- PHẦN 1: KẾT NỐI P2P ---
+function initPeer() {
+    peer = new Peer(); // Tạo ID ngẫu nhiên
+    peer.on('open', (id) => { $('#myId').val(id); });
+    
+    // Khi có người khác kết nối tới mình
+    peer.on('connection', (c) => {
+        conn = c;
+        myColor = 'b'; // Người nhận lời mời sẽ cầm quân Đen
+        setupChat();
+        startGameOnline();
+    });
 }
 
-// Gọi hàm khởi tạo ngay lập tức
-initStockfish();
-// --- CÁC HÀM GIAO DIỆN (Đưa lên đầu để tránh lỗi "not defined") ---
-function openLogin() { $('#loginModal').fadeIn(300); }
-function closeLogin() { $('#loginModal').fadeOut(300); }
-
-function handleLogin() {
-    let name = $('#username').val() || "Kỳ thủ GM";
-    $('#display-name').text(name);
-    $('#nav-auth-zone').html(`<div class="logged-user">● ${name}</div>`);
-    closeLogin();
-    startGame();
+function connectToPeer() {
+    var remoteId = $('#peerId').val();
+    if (!remoteId) return alert("Hãy nhập ID đối thủ!");
+    conn = peer.connect(remoteId);
+    myColor = 'w'; // Người chủ động mời cầm quân Trắng
+    setupChat();
+    startGameOnline();
 }
 
-function startGame() {
-    $('#home-screen').fadeOut(600);
-    playSnd('start');
-    setTimeout(() => { if(board) board.resize(); }, 700);
+function setupChat() {
+    conn.on('data', (data) => {
+        if (data.type === 'move') {
+            game.move(data.move);
+            board.position(game.fen());
+            updateHistory();
+            playSnd('move');
+        }
+    });
+    conn.on('open', () => { isOnline = true; $('#onlineModal').fadeOut(); });
 }
 
-// --- LOGIC TRẬN ĐẤU ---
-function askStockfish() {
-    if (game.game_over() || !engine) return;
-    engine.postMessage('position fen ' + game.fen());
-    engine.postMessage('go movetime 1000');
-}
-
+// --- PHẦN 2: LOGIC GAME ---
 function makeMove(moveObj) {
-    var result = game.move(moveObj);
-    if (result === null) return false;
+    var move = game.move(moveObj);
+    if (!move) return false;
 
-    // Âm thanh
-    if (game.in_check()) playSnd('check');
-    else if (result.flags.includes('c')) playSnd('capture');
-    else playSnd('move');
-
+    playSnd(move.flags.includes('c') ? 'capture' : 'move');
     board.position(game.fen());
     updateHistory();
-    removeHighlights();
+    $('.square-55d63').removeClass('highlight-selected');
+    $('.suggest-dot').remove();
 
-    if (game.turn() === 'b' && !game.game_over()) {
-        askStockfish();
+    if (isOnline && conn) {
+        conn.send({ type: 'move', move: moveObj });
+    } else if (game.turn() === 'b' && !game.game_over()) {
+        // Đấu máy đơn giản nếu offline
+        setTimeout(() => {
+            var moves = game.moves();
+            makeMove(moves[Math.floor(Math.random() * moves.length)]);
+        }, 600);
     }
     return true;
 }
 
-// --- KHỞI TẠO BÀN CỜ VÀ SỰ KIỆN ---
-function playSnd(id) {
-    let s = document.getElementById('snd-' + id.replace('snd-',''));
-    if (s) { s.currentTime = 0; s.play().catch(()=>{}); }
-}
+// Click-to-move
+$('#myBoard').on('mousedown', '.square-55d63', function() {
+    if (isOnline && game.turn() !== myColor) return; // Không phải lượt mình online
 
-function removeHighlights() {
-    $('.square-55d63').removeClass('highlight-selected');
-    $('.suggest-dot').remove();
-}
-
-function updateHistory() {
-    let h = game.history({verbose: true});
-    let html = '';
-    for (let i=0; i<h.length; i+=2) {
-        html += `<div>${Math.floor(i/2)+1}.</div><div>${h[i].san}</div><div>${h[i+1]?h[i+1].san:''}</div>`;
-    }
-    $('#move-history').html(html).scrollTop(999);
-}
-
-// Cấu hình bàn cờ
-board = Chessboard('myBoard', {
-    draggable: true,
-    position: 'start',
-    pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
-    onSnapEnd: () => board.position(game.fen())
-});
-
-// Sự kiện click
-$('#myBoard').on('mousedown', '.square-55d63', function(e) {
-    e.preventDefault();
-    let square = $(this).data('square');
+    let sq = $(this).data('square');
     if (selectedSquare) {
-        if (makeMove({from: selectedSquare, to: square, promotion: 'q'})) {
+        if (makeMove({ from: selectedSquare, to: sq, promotion: 'q' })) {
             selectedSquare = null; return;
         }
     }
-    removeHighlights();
-    let p = game.get(square);
-    if (p && p.color === 'w') {
-        selectedSquare = square;
+    $('.square-55d63').removeClass('highlight-selected');
+    $('.suggest-dot').remove();
+    let p = game.get(sq);
+    if (p && p.color === (isOnline ? myColor : game.turn())) {
+        selectedSquare = sq;
         $(this).addClass('highlight-selected');
-        game.moves({square: square, verbose: true}).forEach(m => {
+        game.moves({square: sq, verbose: true}).forEach(m => {
             $(`.square-${m.to}`).append('<div class="suggest-dot"></div>');
         });
     } else { selectedSquare = null; }
 });
 
-$('#resetBtn').on('click', () => { game.reset(); board.start(); $('#move-history').empty(); });
-$(window).on('load', () => board.resize());
+// Giao diện
+function startGame() { $('#home-screen').fadeOut(); board.resize(); playSnd('start'); }
+function openOnlineModal() { $('#onlineModal').fadeIn(); initPeer(); }
+function startGameOnline() {
+    $('#home-screen').fadeOut();
+    $('#connection-status').text(`● Đang đấu: ${myColor === 'w' ? 'Trắng' : 'Đen'}`);
+    board.orientation(myColor === 'w' ? 'white' : 'black');
+    board.start();
+    game.reset();
+    board.resize();
+}
+
+function updateHistory() {
+    let h = game.history();
+    let html = '';
+    for (let i=0; i<h.length; i+=2) {
+        html += `<div>${Math.floor(i/2)+1}</div><div>${h[i]}</div><div>${h[i+1]||''}</div>`;
+    }
+    $('#move-history').html(html).scrollTop(999);
+}
+
+function playSnd(id) { document.getElementById('snd-'+id).play().catch(()=>{}); }
+
+board = Chessboard('myBoard', { position: 'start', draggable: false });
+$(window).resize(() => board.resize());
