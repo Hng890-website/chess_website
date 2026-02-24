@@ -3,14 +3,77 @@ var game = new Chess();
 var engine;
 var selectedSquare = null;
 
-// HỆ THỐNG ÂM THANH
+// HỆ THỐNG ÂM THANH - Sử dụng link trực tiếp ổn định hơn
 const sounds = {
-    move: new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_standard/default/move-self.mp3'),
-    capture: new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_standard/default/capture.mp3'),
-    check: new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_standard/default/move-check.mp3'),
-    gameStart: new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_standard/default/game-start.mp3'),
-    gameEnd: new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_standard/default/game-end.mp3')
+    move: new Audio('https://www.chess.com/chess-themes/sounds/_standard/default/move-self.mp3'),
+    capture: new Audio('https://www.chess.com/chess-themes/sounds/_standard/default/capture.mp3'),
+    check: new Audio('https://www.chess.com/chess-themes/sounds/_standard/default/move-check.mp3'),
+    gameStart: new Audio('https://www.chess.com/chess-themes/sounds/_standard/default/game-start.mp3'),
+    gameEnd: new Audio('https://www.chess.com/chess-themes/sounds/_standard/default/game-end.mp3')
 };
+
+// HÀM QUAN TRỌNG: Mồi âm thanh để trình duyệt cho phép phát
+function unlockAudio() {
+    Object.values(sounds).forEach(sound => {
+        sound.play().then(() => {
+            sound.pause();
+            sound.currentTime = 0;
+        }).catch(e => console.log("Chờ tương tác để mở âm thanh..."));
+    });
+}
+
+// Cập nhật hàm xử lý đăng nhập và bắt đầu để kích hoạt âm thanh
+function handleLogin() {
+    const user = $('#username').val();
+    if (user) {
+        unlockAudio(); // Mở khóa âm thanh khi user click
+        $('#nav-auth-zone').html(`<span class="user-logged-in">♟ ${user}</span>`);
+        closeLogin();
+        if($('#home-screen').is(':visible')) startGame();
+    }
+}
+
+function startGame() {
+    unlockAudio(); // Mở khóa âm thanh ngay khi nhấn nút Chơi
+    $('#home-screen').fadeOut(500);
+    setTimeout(() => sounds.gameStart.play(), 300);
+}
+
+// Hàm phát âm thanh thông minh dựa trên nước đi
+function playMoveSound(moveResult) {
+    try {
+        if (game.in_checkmate() || game.in_draw()) {
+            sounds.gameEnd.play();
+        } else if (game.in_check()) {
+            sounds.check.play();
+        } else if (moveResult.flags.includes('c') || moveResult.flags.includes('e')) {
+            sounds.capture.play();
+        } else {
+            // Đặt lại thời gian về 0 để có thể phát liên tục khi đi nhanh
+            sounds.move.currentTime = 0;
+            sounds.move.play();
+        }
+    } catch (e) {
+        console.warn("Không thể phát âm thanh:", e);
+    }
+}
+
+// Cập nhật hàm makeMove để gọi playMoveSound
+function makeMove(moveStr) {
+    const move = game.move(moveStr, { sloppy: true });
+    if (!move) return false;
+
+    playMoveSound(move); // Gọi hàm phát âm thanh ở đây
+    board.position(game.fen());
+    updateHistoryUI();
+    removeHighlights();
+
+    if (game.turn() === 'b' && !game.game_over()) {
+        engine.postMessage(`position fen ${game.fen()}`);
+        engine.postMessage('go depth 12');
+    }
+    return true;
+}
 
 // Khởi tạo Stockfish
 const workerCode = `importScripts('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');`;
