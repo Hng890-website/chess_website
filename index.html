@@ -2,30 +2,105 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Chess Pro - Fixed Layout</title>
-    <link rel="icon" href="https://lichess1.org/assets/images/favicon-32.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GM Chess - The Masterpiece</title>
+    <link rel="icon" href="https://lichess1.org/assets/images/favicon-32.png" type="image/png">
     
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="main-wrapper">
-        <div class="board-container">
-            <div id="myBoard"></div>
-        </div>
-
-        <div class="side-panel">
-            <h3>Lịch sử nước đi</h3>
-            <div id="move-history" class="history-box"></div>
-            <button id="resetBtn">Ván mới</button>
+    <div id="home-screen">
+        <div class="glass-panel">
+            <div class="home-logo">
+                <i class="fas fa-chess-queen"></i>
+                <span>GM CHESS</span>
+            </div>
+            <p class="subtitle">Trải nghiệm cờ vua đỉnh cao</p>
+            <div class="home-menu">
+                <button class="btn-main play" onclick="startGame()">
+                    <i class="fas fa-robot"></i> CHƠI VỚI MÁY
+                </button>
+                <button class="btn-main auth" onclick="openLogin()">
+                    <i class="fas fa-user-circle"></i> ĐĂNG NHẬP
+                </button>
+            </div>
         </div>
     </div>
 
-    <audio id="snd-move" src="https://lichess1.org/assets/sound/standard/Move.ogg"></audio>
-    <audio id="snd-capture" src="https://lichess1.org/assets/sound/standard/Capture.ogg"></audio>
+    <div id="loginModal" class="modal">
+        <div class="modal-content glass-card">
+            <h3>Kỳ thủ đăng nhập</h3>
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" placeholder="Nhập tên của bạn...">
+            </div>
+            <button class="btn-glow" onclick="handleLogin()">BẮT ĐẦU NGAY</button>
+            <span class="close-link" onclick="closeLogin()">Hủy bỏ</span>
+        </div>
+    </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <div class="app-container">
+        <header class="main-header">
+            <div class="logo-text">GM<span>CHESS</span></div>
+            <div class="user-status" id="nav-auth-zone">
+                <button class="login-trigger" onclick="openLogin()">Đăng nhập</button>
+            </div>
+        </header>
+
+        <main class="game-layout">
+            <section class="board-section">
+                <div class="player-bar opponent">
+                    <img src="https://lichess1.org/assets/_6S08W2/images/v3/robot.svg" alt="AI">
+                    <div class="player-meta">
+                        <span class="p-name">Stockfish Engine</span>
+                        <span class="p-rating">2850</span>
+                    </div>
+                </div>
+
+                <div id="myBoard" class="modern-board"></div>
+
+                <div class="player-bar you">
+                    <img src="https://lichess1.org/assets/_6S08W2/images/v3/avatar/blank.svg" alt="You">
+                    <div class="player-meta">
+                        <span class="p-name" id="display-name">Guest Player</span>
+                        <span class="p-rating">1500</span>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="control-section">
+                <div class="history-card glass-card">
+                    <div class="card-header">LỊCH SỬ NƯỚC ĐI</div>
+                    <div id="move-history" class="move-list"></div>
+                    <div class="history-footer">
+                        <button class="nav-btn"><i class="fas fa-step-backward"></i></button>
+                        <button class="nav-btn"><i class="fas fa-chevron-left"></i></button>
+                        <button class="nav-btn"><i class="fas fa-chevron-right"></i></button>
+                        <button class="nav-btn"><i class="fas fa-step-forward"></i></button>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="hintBtn" class="btn-action secondary"><i class="fas fa-lightbulb"></i> GỢI Ý</button>
+                    <button id="resetBtn" class="btn-action primary"><i class="fas fa-redo"></i> VÁN MỚI</button>
+                </div>
+            </aside>
+        </main>
+        
+        <footer class="main-footer">
+            &copy; Copyright © 2026 Hng890-website. All rights reserved.
+        </footer>
+    </div>
+
+    <audio id="snd-move" preload="auto" src="https://lichess1.org/assets/sound/standard/Move.ogg"></audio>
+    <audio id="snd-capture" preload="auto" src="https://lichess1.org/assets/sound/standard/Capture.ogg"></audio>
+    <audio id="snd-check" preload="auto" src="https://lichess1.org/assets/sound/standard/Check.ogg"></audio>
+    <audio id="snd-start" preload="auto" src="https://lichess1.org/assets/sound/standard/GenericNotify.ogg"></audio>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script src="script.js"></script>
