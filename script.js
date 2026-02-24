@@ -3,6 +3,15 @@ var game = new Chess();
 var engine;
 var selectedSquare = null;
 
+// HỆ THỐNG ÂM THANH
+const sounds = {
+    move: new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_standard/default/move-self.mp3'),
+    capture: new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_standard/default/capture.mp3'),
+    check: new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_standard/default/move-check.mp3'),
+    gameStart: new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_standard/default/game-start.mp3'),
+    gameEnd: new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_standard/default/game-end.mp3')
+};
+
 // Khởi tạo Stockfish
 const workerCode = `importScripts('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');`;
 const blob = new Blob([workerCode], { type: 'application/javascript' });
@@ -14,7 +23,6 @@ engine.onmessage = function(e) {
         if (game.turn() === 'b') {
             makeMove(move);
         } else {
-            // Gợi ý
             removeHighlights();
             const from = move.substring(0, 2);
             const to = move.substring(2, 4);
@@ -24,9 +32,35 @@ engine.onmessage = function(e) {
     }
 };
 
-function removeHighlights() {
-    $('#myBoard .square-55d63').removeClass('highlight-selected highlight-hint');
-    $('.suggest-dot').remove();
+function playMoveSound(moveResult) {
+    if (game.in_checkmate() || game.in_draw()) {
+        sounds.gameEnd.play();
+    } else if (game.in_check()) {
+        sounds.check.play();
+    } else if (moveResult.flags.includes('c') || moveResult.flags.includes('e')) {
+        sounds.capture.play();
+    } else {
+        sounds.move.play();
+    }
+}
+
+function makeMove(moveStr) {
+    const move = game.move(moveStr, { sloppy: true });
+    if (!move) return false;
+
+    playMoveSound(move);
+    board.position(game.fen());
+    updateHistoryUI();
+    removeHighlights();
+
+    if (game.turn() === 'b' && !game.game_over()) {
+        $('#engine-status').text('Máy đang tính...');
+        engine.postMessage(`position fen ${game.fen()}`);
+        engine.postMessage('go depth 12');
+    } else {
+        $('#engine-status').text('Sẵn sàng');
+    }
+    return true;
 }
 
 function updateHistoryUI() {
@@ -43,27 +77,7 @@ function updateHistoryUI() {
     list.scrollTop(list[0].scrollHeight);
 }
 
-function makeMove(moveStr) {
-    const move = game.move(moveStr, { sloppy: true });
-    if (!move) return false;
-
-    board.position(game.fen());
-    updateHistoryUI();
-    removeHighlights();
-
-    if (game.turn() === 'b') {
-        $('#engine-status').text('Máy đang tính...');
-        engine.postMessage(`position fen ${game.fen()}`);
-        engine.postMessage('go depth 12');
-    } else {
-        $('#engine-status').text('Sẵn sàng');
-    }
-    return true;
-}
-
-// XỬ LÝ CLICK-TO-MOVE (KHÔNG CẦN KÉO)
 function handleSquareClick(square) {
-    // 1. Thử đi quân nếu đã chọn 1 quân trước đó
     if (selectedSquare) {
         if (makeMove({ from: selectedSquare, to: square, promotion: 'q' })) {
             selectedSquare = null;
@@ -71,16 +85,12 @@ function handleSquareClick(square) {
         }
     }
 
-    // 2. Chọn quân mới (phải là quân Trắng)
     removeHighlights();
     const piece = game.get(square);
     if (piece && piece.color === 'w') {
         selectedSquare = square;
         $(`.square-${square}`).addClass('highlight-selected');
-        
-        // Hiện chấm tròn gợi ý các nước hợp lệ
-        const moves = game.moves({ square: square, verbose: true });
-        moves.forEach(m => {
+        game.moves({ square: square, verbose: true }).forEach(m => {
             $(`.square-${m.to}`).append('<div class="suggest-dot"></div>');
         });
     } else {
@@ -88,9 +98,13 @@ function handleSquareClick(square) {
     }
 }
 
-// KHỞI TẠO BOARD
+function removeHighlights() {
+    $('#myBoard .square-55d63').removeClass('highlight-selected highlight-hint');
+    $('.suggest-dot').remove();
+}
+
 board = Chessboard('myBoard', {
-    draggable: true, // Vẫn cho kéo nếu muốn
+    draggable: true,
     position: 'start',
     pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
     onDrop: (s, t) => {
@@ -100,10 +114,9 @@ board = Chessboard('myBoard', {
     onSnapEnd: () => board.position(game.fen())
 });
 
-// EVENT HIJACKING: Bắt sự kiện mousedown để xử lý CLICK trước KÉO
-$('#myBoard').on('mousedown', '.square-55d63', function(e) {
-    const square = $(this).attr('data-square');
-    handleSquareClick(square);
+// CLICK-TO-MOVE HIJACKING
+$('#myBoard').on('mousedown', '.square-55d63', function() {
+    handleSquareClick($(this).attr('data-square'));
 });
 
 $('#hintBtn').on('click', () => {
@@ -112,6 +125,16 @@ $('#hintBtn').on('click', () => {
 });
 
 $('#resetBtn').on('click', () => {
-    game.reset(); board.start(); $('#move-history').empty(); removeHighlights();
+    game.reset(); 
+    board.start(); 
+    $('#move-history').empty(); 
+    removeHighlights();
+    sounds.gameStart.play();
     engine.postMessage('ucinewgame');
 });
+
+// Phát âm thanh bắt đầu khi load trang
+window.addEventListener('click', () => {
+    // Trình duyệt chặn tự động phát, cần 1 click đầu tiên của user
+    if(game.history().length === 0) sounds.gameStart.play();
+}, { once: true });
