@@ -1,66 +1,100 @@
 :root {
-    --primary: #81b64c;
-    --dark-bg: #161512;
-    --glass: rgba(255, 255, 255, 0.05);
-    --text-main: #f1f1f1;
+    --gold: #d4af37;
+    --bg: #1a1a1a;
+    --card: #262626;
 }
 
 body {
-    background-color: var(--dark-bg);
-    color: var(--text-main);
-    font-family: sans-serif;
     margin: 0;
+    background: var(--bg);
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
 }
 
-.app-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; flex: 1; display: flex; flex-direction: column; }
-
-/* LAYOUT: Bàn cờ to lên */
-.game-layout {
-    display: grid;
-    grid-template-columns: 1fr 350px; /* Tăng độ rộng sidebar một chút để cân đối */
-    gap: 30px;
-    margin-top: 20px;
-    align-items: start;
+/* Header sang trọng */
+.main-header {
+    background: #000;
+    padding: 15px 0;
+    border-bottom: 2px solid var(--gold);
 }
 
-.board-section {
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
+    padding: 0 20px;
 }
 
-/* Kích thước bàn cờ mới (To hơn 20%) */
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* BÀN CỜ SIÊU TO */
+.game-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+    padding: 20px;
+    flex: 1;
+}
+
+.board-wrapper {
+    width: 75vh; /* Bàn cờ chiếm 75% chiều cao màn hình */
+    max-width: 800px;
+}
+
 #myBoard {
-    width: 100%;
-    max-width: 650px; /* Tăng từ 500px lên 650px */
-    aspect-ratio: 1/1;
-    border: 10px solid #262421;
-    border-radius: 8px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    width: 100% !important;
+    border: 5px solid #444;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
 }
 
-.modern-board .square-55d63 img { width: 100% !important; height: 100% !important; }
+/* Sidebar */
+.sidebar {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
-/* Side Panel */
-.history-card { height: 500px; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); }
-.move-list { height: 440px; overflow-y: auto; display: grid; grid-template-columns: 50px 1fr 1fr; padding: 10px; font-family: monospace; }
+.glass-card {
+    background: var(--card);
+    border-radius: 10px;
+    overflow: hidden;
+}
 
-/* Home & Modal */
-#home-screen { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; }
-.glass-panel { padding: 40px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 20px; text-align: center; }
-.home-logo { font-size: 3rem; color: var(--primary); font-weight: bold; margin-bottom: 20px; }
-.btn-main { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-.play { background: var(--primary); color: white; }
-.online { background: #3d3a37; color: white; }
+.panel-header {
+    background: #333;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--gold);
+}
 
-.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; }
-.modal-content { width: 350px; margin: 20vh auto; padding: 30px; background: #262421; border-radius: 15px; text-align: center; }
-.input-group { background: #1a1917; padding: 10px; border-radius: 5px; margin: 15px 0; display: flex; }
-.input-group input { background: none; border: none; color: white; width: 100%; outline: none; }
-.btn-glow { width: 100%; padding: 12px; background: var(--primary); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; }
+.moves {
+    height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    font-family: monospace;
+}
 
-.highlight-selected { background-color: rgba(129, 182, 76, 0.5) !important; }
-.suggest-dot { width: 20%; height: 20%; background: rgba(0,0,0,0.2); border-radius: 50%; position: absolute; top: 40%; left: 40%; }
+.btn-primary {
+    background: var(--gold);
+    border: none;
+    padding: 15px;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+}
