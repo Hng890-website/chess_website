@@ -3,76 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GM Chess - Online Edition</title>
-    <link rel="icon" href="https://lichess1.org/assets/images/favicon-32.png" type="image/png">
+    <title>GM CHESS - PRO EDITION</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="home-screen">
-    <div class="glass-panel">
-        <div class="home-logo"><i class="fas fa-chess-queen"></i> <span>GM CHESS</span></div>
-        <p class="subtitle">Chinh phục đỉnh cao cùng bạn bè</p>
-        <div class="home-menu">
-            <button class="btn-main play" onclick="startGame()"><i class="fas fa-robot"></i> CHƠI VỚI MÁY</button>
-            <button class="btn-main online" onclick="openOnlineModal()"><i class="fas fa-globe"></i> ĐẤU ONLINE</button>
-            <button class="btn-main auth" onclick="openLogin()"><i class="fas fa-user-circle"></i> ĐĂNG NHẬP</button>
+<header class="main-header">
+    <div class="header-container">
+        <div class="logo">
+            <i class="fas fa-chess-knight"></i>
+            <span>GM CHESS</span>
         </div>
+        <nav class="nav-links">
+            <div id="status" class="status-tag">● Mode: Online</div>
+            <div class="lang-group">
+                <button onclick="changeLang('vi')">VN</button>
+                <button onclick="changeLang('en')">EN</button>
+            </div>
+        </nav>
     </div>
-</div>
+</header>
 
-<div id="onlineModal" class="modal">
-    <div class="modal-content glass-card">
-        <h3>Đấu Online (P2P)</h3>
-        <p style="font-size: 0.8rem; color: #999;">Gửi ID của bạn cho bạn bè hoặc dán ID bạn bè vào đây</p>
-        <div class="input-group">
-            <input type="text" id="myId" readonly placeholder="Đang tạo ID...">
-            <button onclick="copyId()" style="background:none; border:none; color:var(--primary); cursor:pointer;"><i class="fas fa-copy"></i></button>
-        </div>
-        <div class="input-group">
-            <input type="text" id="peerId" placeholder="Dán ID đối thủ...">
-        </div>
-        <button class="btn-glow" onclick="connectToPeer()">KẾT NỐI & CHƠI</button>
-        <span class="close-link" onclick="$('#onlineModal').fadeOut()">Quay lại</span>
+<main class="game-container">
+    <div class="board-wrapper">
+        <div id="myBoard"></div>
     </div>
-</div>
 
-<div class="app-container">
-    <header class="main-header">
-        <div class="logo-text">GM<span>CHESS</span></div>
-        <div id="connection-status" style="font-size: 0.8rem; color: var(--primary);">● Chế độ: Offline</div>
-    </header>
-
-    <main class="game-layout">
-        <section class="board-section">
-            <div id="myBoard" class="modern-board"></div>
-            <div class="player-info-bottom">
-                <span id="display-name">Kỳ thủ GM</span> <span id="player-side-tag"></span>
-            </div>
-        </section>
-
-        <aside class="control-section">
-            <div class="history-card glass-card">
-                <div class="card-header">LỊCH SỬ NƯỚC ĐI</div>
-                <div id="move-history" class="move-list"></div>
-            </div>
-            <div class="action-buttons">
-                <button id="resetBtn" class="btn-action primary">VÁN MỚI</button>
-            </div>
-        </aside>
-    </main>
-</div>
-
-<audio id="snd-move" src="https://lichess1.org/assets/sound/standard/Move.ogg"></audio>
-<audio id="snd-capture" src="https://lichess1.org/assets/sound/standard/Capture.ogg"></audio>
-<audio id="snd-start" src="https://lichess1.org/assets/sound/standard/GenericNotify.ogg"></audio>
+    <aside class="sidebar">
+        <div class="glass-card history-panel">
+            <div class="panel-header">LỊCH SỬ NƯỚC ĐI</div>
+            <div id="move-history" class="moves"></div>
+        </div>
+        <div class="controls">
+            <button id="resetBtn" class="btn-primary">VÁN MỚI</button>
+        </div>
+    </aside>
+</main>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
