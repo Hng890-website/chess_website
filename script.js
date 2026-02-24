@@ -1,8 +1,35 @@
 var board = null;
 var game = new Chess();
-var selectedSquare = null; // Biến theo dõi ô được chọn
+var selectedSquare = null;
 
-// Khởi tạo âm thanh từ DOM để tránh NotSupportedError
+// --- KHỞI TẠO STOCKFISH ---
+// Sử dụng Stockfish qua CDN để đảm bảo không lỗi file cục bộ
+var engine = new Worker('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
+
+// Lắng nghe phản hồi từ Stockfish
+engine.onmessage = function(event) {
+    var line = event.data;
+    if (line.indexOf('bestmove') > -1) {
+        var match = line.match(/bestmove\s([a-h][1-8])([a-h][1-8])(q|r|b|n)?/);
+        if (match) {
+            // Máy thực hiện nước đi
+            makeMove({
+                from: match[1],
+                to: match[2],
+                promotion: match[3] || 'q'
+            });
+        }
+    }
+};
+
+// Hàm yêu cầu máy tính toán
+function askStockfish() {
+    if (game.game_over()) return;
+    engine.postMessage('position fen ' + game.fen());
+    engine.postMessage('go movetime 1000'); // Máy suy nghĩ trong 1 giây
+}
+
+// --- HỆ THỐNG ÂM THANH ---
 const sounds = {
     move: document.getElementById('snd-move'),
     capture: document.getElementById('snd-capture'),
@@ -10,7 +37,6 @@ const sounds = {
     start: document.getElementById('snd-start')
 };
 
-// Hàm phát âm thanh an toàn
 function playSnd(id) {
     if (sounds[id]) {
         sounds[id].currentTime = 0;
@@ -18,57 +44,31 @@ function playSnd(id) {
     }
 }
 
-// Logic cho màn hình Home
-function startGame() {
-    $('#home-screen').fadeOut(600); // Ẩn màn hình home
-    playSnd('start'); // Phát âm thanh khởi động
-    // Sau khi game bắt đầu, kích hoạt board.resize()
-    setTimeout(() => {
-        if (board) board.resize();
-    }, 700);
-}
-
-function handleLogin() {
-    let name = $('#username').val().trim();
-    if (!name) name = "Kỳ thủ Elite"; // Tên mặc định nếu không nhập
-    
-    $('#display-name').text(name); // Cập nhật tên người chơi
-    $('#nav-auth-zone').html(`<div class="logged-user"><i class="fas fa-user-circle"></i> ${name}</div>`);
-    $('#loginModal').fadeOut(300); // Ẩn modal đăng nhập
-    startGame(); // Bắt đầu game
-}
-
-function openLogin() { $('#loginModal').fadeIn(300); }
-function closeLogin() { $('#loginModal').fadeOut(300); }
-
-// Hàm chính xử lý nước đi
+// --- LOGIC GAME ---
 function makeMove(moveObj) {
-    let result = game.move(moveObj);
-    if (result === null) return false; // Nước đi không hợp lệ
+    var result = game.move(moveObj);
+    if (result === null) return false;
 
-    // Phát âm thanh tương ứng
+    // Phát âm thanh
     if (game.in_check()) playSnd('check');
     else if (result.flags.includes('c') || result.flags.includes('e')) playSnd('capture');
     else playSnd('move');
 
-    board.position(game.fen()); // Cập nhật trạng thái bàn cờ
-    updateHistory(); // Cập nhật lịch sử nước đi
-    removeHighlights(); // Xóa các highlight và chấm tròn
+    board.position(game.fen());
+    updateHistory();
+    removeHighlights();
 
-    // Lượt máy (Đen) - Random Move đơn giản
+    // Nếu vừa đi xong là lượt của Đen (Máy), gọi Stockfish
     if (game.turn() === 'b' && !game.game_over()) {
-        setTimeout(() => {
-            let moves = game.moves();
-            if (moves.length > 0) {
-                let randomMove = moves[Math.floor(Math.random() * moves.length)];
-                makeMove({ from: randomMove.substring(0, 2), to: randomMove.substring(2, 4), promotion: 'q' });
-            }
-        }, 800); // Thời gian máy "suy nghĩ"
+        askStockfish();
+    }
+    
+    if (game.game_over()) {
+        setTimeout(() => alert("Trận đấu kết thúc!"), 500);
     }
     return true;
 }
 
-// Cập nhật lịch sử nước đi
 function updateHistory() {
     let h = game.history({ verbose: true });
     let html = '';
@@ -80,78 +80,60 @@ function updateHistory() {
     $('#move-history').html(html).scrollTop($('#move-history')[0].scrollHeight);
 }
 
-// Xóa highlight và chấm tròn
 function removeHighlights() {
     $('.square-55d63').removeClass('highlight-selected');
     $('.suggest-dot').remove();
 }
 
-// KHỞI TẠO BÀN CỜ
+// --- KHỞI TẠO BÀN CỜ ---
 var config = {
     draggable: true,
     position: 'start',
     pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
-    // onDrop: makeMove, // Bật lại nếu muốn kéo
-    onSnapEnd: function() { board.position(game.fen()); } // Đảm bảo quân cờ nhảy đúng ô
+    onSnapEnd: function() { board.position(game.fen()); }
 };
 board = Chessboard('myBoard', config);
 
-// CLICK-TO-MOVE HIJACKING: Xử lý click để đi quân (FIX LỖI "KHÔNG ĐI ĐƯỢC")
+// Bắt sự kiện Click-to-Move
 $('#myBoard').on('mousedown', '.square-55d63', function(e) {
-    // Ngăn chặn hành vi mặc định của trình duyệt để tránh xung đột kéo
-    e.preventDefault(); 
-    e.stopPropagation();
-
+    e.preventDefault();
     let square = $(this).data('square');
     
-    // Nếu đã có ô được chọn trước đó
     if (selectedSquare) {
         if (makeMove({ from: selectedSquare, to: square, promotion: 'q' })) {
-            selectedSquare = null; // Reset ô đã chọn sau khi đi thành công
+            selectedSquare = null;
             return;
         }
     }
 
-    // Nếu chưa có ô nào được chọn hoặc nước đi trước đó không hợp lệ
-    removeHighlights(); // Xóa hết highlight cũ
+    removeHighlights();
     let piece = game.get(square);
-    if (piece && piece.color === 'w') { // Chỉ cho phép chọn quân Trắng
-        selectedSquare = square; // Gán ô hiện tại là ô được chọn
-        $(this).addClass('highlight-selected'); // Highlight ô này
-        
-        // Hiển thị các chấm tròn gợi ý nước đi
+    if (piece && piece.color === 'w') {
+        selectedSquare = square;
+        $(this).addClass('highlight-selected');
         game.moves({ square: square, verbose: true }).forEach(m => {
             $(`.square-${m.to}`).append('<div class="suggest-dot"></div>');
         });
     } else {
-        selectedSquare = null; // Không phải quân của mình hoặc không có quân
+        selectedSquare = null;
     }
 });
 
-// Nút reset ván đấu
+// Nút bấm
 $('#resetBtn').on('click', function() {
     game.reset();
     board.start();
     $('#move-history').empty();
     removeHighlights();
-    selectedSquare = null; // Reset ô chọn khi bắt đầu ván mới
-    playSnd('start'); // Phát âm thanh khởi động
+    selectedSquare = null;
+    playSnd('start');
 });
 
-// Nút gợi ý (Chưa có logic Stockfish, chỉ là placeholder)
-$('#hintBtn').on('click', function() {
-    // Logic gợi ý từ Stockfish sẽ được thêm ở đây
-    alert('Tính năng gợi ý đang phát triển!');
-});
+function startGame() {
+    $('#home-screen').fadeOut(600);
+    playSnd('start');
+    setTimeout(() => board.resize(), 700);
+}
 
-// Khi trang load xong, đảm bảo bàn cờ được vẽ đúng kích thước
-$(window).on('load', function() {
-    if (board) board.resize();
-    // Vô hiệu hóa kéo thả nếu bạn muốn chỉ dùng click-to-move
-    // board.destroy(); board = Chessboard('myBoard', { /* config không draggable */ });
-});
-
-// Khi cửa sổ thay đổi kích thước, điều chỉnh bàn cờ
-$(window).resize(function() {
-    if (board) board.resize();
-});
+$(window).on('load', () => board.resize());
+$(window).resize(() => board.resize());
