@@ -3,101 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GM Chess - Elite Edition</title>
-    <link rel="icon" href="https://lichess1.org/assets/images/favicon-32.png" type="image/png">
+    <title>GM Chess Elite - Fixed Version</title>
+    
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        :root {
+            --primary: #81b64c;
+            --dark-bg: #161512;
+            --glass: rgba(255, 255, 255, 0.05);
+            --text-main: #f1f1f1;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- FIX LỖI GIAO DIỆN TRÀN (CỰC KỲ QUAN TRỌNG) --- */
+        .app-container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .game-layout { grid-template-columns: 1fr; }
+        }
+
+        /* --- FIX LỖI QUÂN CỜ KHỔNG LỒ --- */
+        #myBoard {
+            width: 100% !important;
+            max-width: 550px;
+            margin: 0 auto;
+            border: 5px solid #262421;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Đảm bảo ảnh quân cờ nằm gọn trong ô */
+        .chessboard-63f59 img {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* --- STYLE CÁC THÀNH PHẦN KHÁC --- */
+        .glass-card {
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .move-history {
+            height: 350px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 40px 1fr 1fr;
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+        }
+
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-play { background: var(--primary); color: white; }
+        .btn-play:hover { background: #a3d16a; }
+
+        .suggest-dot {
+            width: 20%; height: 20%; background: rgba(0,0,0,0.2);
+            border-radius: 50%; position: absolute; top: 40%; left: 40%;
+        }
+
+        .highlight-selected { background-color: rgba(129, 182, 76, 0.5) !important; }
+
+        #home-screen {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 999; display: flex; align-items: center; justify-content: center;
+        }
+    </style>
 </head>
 <body>
 
     <div id="home-screen">
-        <div class="glass-panel">
-            <div class="home-logo">
-                <i class="fas fa-chess-queen"></i>
-                <span>GM CHESS</span>
-            </div>
-            <p class="subtitle">Trải nghiệm cờ vua đỉnh cao 2026</p>
-            <div class="home-menu">
-                <button class="btn-main play" onclick="startGame()">
-                    <i class="fas fa-robot"></i> CHƠI VỚI MÁY
-                </button>
-                <button class="btn-main auth" onclick="openLogin()">
-                    <i class="fas fa-user-circle"></i> ĐĂNG NHẬP
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="loginModal" class="modal">
-        <div class="modal-content glass-card">
-            <h3>Kỳ thủ đăng nhập</h3>
-            <div class="input-group">
-                <i class="fas fa-user"></i>
-                <input type="text" id="username" placeholder="Nhập tên của bạn...">
-            </div>
-            <button class="btn-glow" onclick="handleLogin()">BẮT ĐẦU NGAY</button>
-            <span class="close-link" onclick="closeLogin()">Hủy bỏ</span>
+        <div class="glass-card" style="width: 300px; text-align: center;">
+            <h1 style="color: var(--primary);">GM CHESS</h1>
+            <button class="btn btn-play" onclick="startGame()">BẮT ĐẦU CHƠI</button>
         </div>
     </div>
 
     <div class="app-container">
-        <header class="main-header">
-            <div class="logo-text">GM<span>CHESS</span></div>
-            <div class="user-status" id="nav-auth-zone">
-                <button class="login-trigger" onclick="openLogin()">Đăng nhập</button>
-            </div>
+        <header style="text-align: center;">
+            <h2>Bàn cờ của bạn</h2>
         </header>
 
-        <main class="game-layout">
-            <section class="board-section">
-                <div class="player-bar opponent">
-                    <img src="https://lichess1.org/assets/_6S08W2/images/v3/robot.svg" alt="AI">
-                    <div class="player-meta">
-                        <span class="p-name">Stockfish Engine</span>
-                        <span class="p-rating">2850</span>
-                    </div>
-                </div>
+        <div class="game-layout">
+            <div class="board-container">
+                <div id="myBoard"></div>
+            </div>
 
-                <div id="myBoard" class="modern-board"></div>
-
-                <div class="player-bar you">
-                    <img src="https://lichess1.org/assets/_6S08W2/images/v3/avatar/blank.svg" alt="You">
-                    <div class="player-meta">
-                        <span class="p-name" id="display-name">Guest Player</span>
-                        <span class="p-rating">1500</span>
-                    </div>
+            <aside class="controls">
+                <div class="glass-card">
+                    <div style="text-align:center; margin-bottom:10px; font-weight:bold;">LỊCH SỬ</div>
+                    <div id="move-history" class="move-history"></div>
                 </div>
-            </section>
-
-            <aside class="control-section">
-                <div class="history-card glass-card">
-                    <div class="card-header">LỊCH SỬ NƯỚC ĐI</div>
-                    <div id="move-history" class="move-list"></div>
-                    <div class="history-footer">
-                        <button class="nav-btn"><i class="fas fa-step-backward"></i></button>
-                        <button class="nav-btn"><i class="fas fa-chevron-left"></i></button>
-                        <button class="nav-btn"><i class="fas fa-chevron-right"></i></button>
-                        <button class="nav-btn"><i class="fas fa-step-forward"></i></button>
-                    </div>
-                </div>
-
-                <div class="action-buttons">
-                    <button id="hintBtn" class="btn-action secondary"><i class="fas fa-lightbulb"></i> GỢI Ý</button>
-                    <button id="resetBtn" class="btn-action primary"><i class="fas fa-redo"></i> VÁN MỚI</button>
-                </div>
+                <button class="btn btn-play" onclick="location.reload()">VÁN MỚI</button>
             </aside>
-        </main>
+        </div>
     </div>
 
-    <audio id="snd-move" preload="auto" src="https://lichess1.org/assets/sound/standard/Move.ogg"></audio>
-    <audio id="snd-capture" preload="auto" src="https://lichess1.org/assets/sound/standard/Capture.ogg"></audio>
-    <audio id="snd-check" preload="auto" src="https://lichess1.org/assets/sound/standard/Check.ogg"></audio>
-    <audio id="snd-start" preload="auto" src="https://lichess1.org/assets/sound/standard/GenericNotify.ogg"></audio>
+    <audio id="snd-move" src="https://lichess1.org/assets/sound/standard/Move.ogg"></audio>
+    <audio id="snd-capture" src="https://lichess1.org/assets/sound/standard/Capture.ogg"></audio>
+    <audio id="snd-check" src="https://lichess1.org/assets/sound/standard/Check.ogg"></audio>
+    <audio id="snd-start" src="https://lichess1.org/assets/sound/standard/GenericNotify.ogg"></audio>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-    <script src="script.js"></script>
+
+    <script>
+        var board = null;
+        var game = new Chess();
+        var selectedSquare = null;
+
+        const snd = {
+            move: document.getElementById('snd-move'),
+            capture: document.getElementById('snd-capture'),
+            check: document.getElementById('snd-check'),
+            start: document.getElementById('snd-start')
+        };
+
+        function play(id) {
+            if (snd[id]) {
+                snd[id].currentTime = 0;
+                snd[id].play().catch(() => {});
+            }
+        }
+
+        function startGame() {
+            $('#home-screen').hide();
+            play('start');
+        }
+
+        function onMove(m) {
+            let res = game.move(m, { sloppy: true });
+            if (!res) return false;
+
+            if (game.in_check()) play('check');
+            else if (res.flags.includes('c')) play('capture');
+            else play('move');
+
+            board.position(game.fen());
+            updateHistory();
+            $('.square-55d63').removeClass('highlight-selected');
+            $('.suggest-dot').remove();
+
+            // AI đi ngẫu nhiên
+            if (game.turn() === 'b' && !game.game_over()) {
+                setTimeout(() => {
+                    let moves = game.moves();
+                    onMove(moves[Math.floor(Math.random() * moves.length)]);
+                }, 500);
+            }
+            return true;
+        }
+
+        function updateHistory() {
+            let h = game.history();
+            let html = '';
+            for (let i = 0; i < h.length; i += 2) {
+                html += `<div style="color:#666">${Math.floor(i/2)+1}</div>`;
+                html += `<div>${h[i]}</div>`;
+                html += `<div>${h[i+1] || ''}</div>`;
+            }
+            $('#move-history').html(html).scrollTop(9999);
+        }
+
+        // FIX CLICK-TO-MOVE
+        $('#myBoard').on('mousedown', '.square-55d63', function() {
+            let sq = $(this).data('square');
+            if (selectedSquare) {
+                if (onMove({ from: selectedSquare, to: sq, promotion: 'q' })) {
+                    selectedSquare = null;
+                    return;
+                }
+            }
+            $('.square-55d63').removeClass('highlight-selected');
+            $('.suggest-dot').remove();
+            let p = game.get(sq);
+            if (p && p.color === 'w') {
+                selectedSquare = sq;
+                $(this).addClass('highlight-selected');
+                game.moves({ square: sq, verbose: true }).forEach(m => {
+                    $(`.square-${m.to}`).append('<div class="suggest-dot"></div>');
+                });
+            } else { selectedSquare = null; }
+        });
+
+        $(window).on('load', function() {
+            board = Chessboard('myBoard', {
+                draggable: true,
+                position: 'start',
+                pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
+            });
+            $(window).resize(board.resize);
+        });
+    </script>
 </body>
 </html>
