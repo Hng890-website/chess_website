@@ -1,4 +1,4 @@
-// --- KHAI BÁO TOÀN CỤC ---
+/ --- KHAI BÁO TOÀN CỤC ---
 var board = null;
 var game = new Chess();
 var engine = null;
