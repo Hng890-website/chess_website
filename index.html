@@ -3,32 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GM CHESS - ULTIMATE</title>
+    <title>GM CHESS - ELITE</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="main-header">
-    <div class="logo">GM<span>CHESS</span></div>
-    <div class="header-tools">
-        <span id="status">● Mode: AI</span>
-        <button class="btn-sm" onclick="openOnlineModal()">Multiplayer</button>
-    </div>
-</header>
-
-<div class="game-layout">
-    <div class="board-container">
-        <div id="myBoard"></div>
-    </div>
-    
-    <div class="side-panel">
-        <div class="move-history-card">
-            <div class="card-header">HISTORY</div>
-            <div id="move-history"></div>
+<div id="home-screen">
+    <div class="overlay"></div>
+    <div class="home-content">
+        <div class="hero-logo">
+            <i class="fas fa-chess-knight"></i>
+            <h1>GM<span>CHESS</span></h1>
         </div>
-        <button id="resetBtn" class="btn-primary">NEW GAME</button>
+        <p>Thử thách trí tuệ cùng Stockfish Engine</p>
+        <div class="menu-buttons">
+            <button class="btn-hero" onclick="enterGame()">
+                <i class="fas fa-play"></i> CHƠI VỚI MÁY
+            </button>
+            <button class="btn-hero secondary">
+                <i class="fas fa-trophy"></i> BẢNG XẾP HẠNG
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="app-wrapper">
+    <header class="game-header">
+        <div class="logo-sm">GM<span>CHESS</span></div>
+        <div class="status-indicator">● Engine: Stockfish 10</div>
+    </header>
+
+    <div class="game-container">
+        <div class="board-layout">
+            <div id="myBoard"></div>
+        </div>
+
+        <div class="sidebar">
+            <div class="glass-panel history-box">
+                <div class="panel-tag">LỊCH SỬ</div>
+                <div id="move-history"></div>
+            </div>
+            <div class="glass-panel controls">
+                <button id="resetBtn" class="btn-control">VÁN MỚI</button>
+                <button class="btn-control out" onclick="exitGame()">THOÁT</button>
+            </div>
+        </div>
     </div>
 </div>
 
