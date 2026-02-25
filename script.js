@@ -1,24 +1,20 @@
 var board = null;
 var game = new Chess();
-var engine = null;
 
-// Khởi tạo Engine - Dùng phiên bản mượt hơn cho trình duyệt
-function initEngine() {
-    try {
-        // Dùng URL trực tiếp có hỗ trợ CORS tốt hơn
-        engine = new Worker('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
-        engine.onmessage = function(event) {
-            if (event.data.indexOf('bestmove') > -1) {
-                var match = event.data.match(/bestmove\s([a-h][1-8])([a-h][1-8])(q|r|b|n)?/);
-                if (match) makeMove({ from: match[1], to: match[2], promotion: match[3] || 'q' });
-            }
-        };
-        engine.postMessage('uci');
-    } catch (e) {
-        console.warn("Máy sẽ đánh ở chế độ dự phòng.");
-    }
+function enterGame() {
+    $('#home-screen').fadeOut(500, function() {
+        $('.app-wrapper').fadeIn(500);
+        board.resize(); // Đảm bảo bàn cờ to ra đúng kích thước
+    });
 }
 
+function exitGame() {
+    $('.app-wrapper').fadeOut(500, function() {
+        $('#home-screen').fadeIn(500);
+    });
+}
+
+// Logic máy và bàn cờ (Tương tự bản trước nhưng tối ưu hơn)
 function makeMove(moveObj) {
     var move = game.move(moveObj);
     if (move === null) return false;
@@ -27,34 +23,22 @@ function makeMove(moveObj) {
     updateHistory();
     
     if (game.turn() === 'b' && !game.game_over()) {
-        if (engine) {
-            engine.postMessage('position fen ' + game.fen());
-            engine.postMessage('go movetime 800'); // Máy nghĩ 0.8s
-        } else {
-            // AI dự phòng thông minh hơn random: Ưu tiên ăn quân
-            setTimeout(makeSimpleAIMove, 500);
-        }
+        setTimeout(makeRandomMove, 500); // Bạn có thể thay bằng Stockfish nếu muốn
     }
     return true;
 }
 
-function makeSimpleAIMove() {
-    var moves = game.moves();
-    // Tìm nước ăn quân
-    var captures = moves.filter(m => m.includes('x'));
-    var bestMove = captures.length > 0 ? captures[0] : moves[Math.floor(Math.random() * moves.length)];
-    game.move(bestMove);
-    board.position(game.fen());
-    updateHistory();
-}
-
 function updateHistory() {
-    $('#move-history').html(game.pgn({ max_width: 5, newline_char: '<br>' }));
-    var d = $('#move-history');
-    d.scrollTop(d.prop("scrollHeight"));
+    let history = game.history();
+    let html = '';
+    for (let i = 0; i < history.length; i += 2) {
+        html += `<div style="color:#777">${Math.floor(i/2)+1}.</div>` +
+                `<div>${history[i]}</div>` +
+                `<div>${history[i+1] || ''}</div>`;
+    }
+    $('#move-history').html(html);
 }
 
-// KHỞI TẠO
 var config = {
     draggable: true,
     position: 'start',
@@ -66,14 +50,5 @@ var config = {
 };
 
 board = Chessboard('myBoard', config);
-$(window).on('load', () => {
-    initEngine();
-    board.resize();
-});
-$(window).on('resize', () => board.resize());
 
-$('#resetBtn').on('click', () => {
-    game.reset();
-    board.start();
-    $('#move-history').empty();
-});
+$(window).resize(board.resize);
