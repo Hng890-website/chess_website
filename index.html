@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GM CHESS - PRO EDITION</title>
+    <title>GM CHESS - ULTIMATE</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -11,36 +11,26 @@
 <body>
 
 <header class="main-header">
-    <div class="header-container">
-        <div class="logo">
-            <i class="fas fa-chess-knight"></i>
-            <span>GM CHESS</span>
-        </div>
-        <nav class="nav-links">
-            <div id="status" class="status-tag">● Mode: Online</div>
-            <div class="lang-group">
-                <button onclick="changeLang('vi')">VN</button>
-                <button onclick="changeLang('en')">EN</button>
-            </div>
-        </nav>
+    <div class="logo">GM<span>CHESS</span></div>
+    <div class="header-tools">
+        <span id="status">● Mode: AI</span>
+        <button class="btn-sm" onclick="openOnlineModal()">Multiplayer</button>
     </div>
 </header>
 
-<main class="game-container">
-    <div class="board-wrapper">
+<div class="game-layout">
+    <div class="board-container">
         <div id="myBoard"></div>
     </div>
-
-    <aside class="sidebar">
-        <div class="glass-card history-panel">
-            <div class="panel-header">LỊCH SỬ NƯỚC ĐI</div>
-            <div id="move-history" class="moves"></div>
+    
+    <div class="side-panel">
+        <div class="move-history-card">
+            <div class="card-header">HISTORY</div>
+            <div id="move-history"></div>
         </div>
-        <div class="controls">
-            <button id="resetBtn" class="btn-primary">VÁN MỚI</button>
-        </div>
-    </aside>
-</main>
+        <button id="resetBtn" class="btn-primary">NEW GAME</button>
+    </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
