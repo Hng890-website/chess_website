@@ -15,11 +15,16 @@ const translations = {
     }
 };
 
+window.closeCmosModal = function() {
+    $('#cmos-modal').fadeOut(200);
+};
+
 function updateClock() {
     const now = new Date();
+    // Để TEST pin Dead, bạn hãy đổi dòng dưới thành: const d = 1, m = 1, y = 2000;
     const d = now.getDate(), m = now.getMonth() + 1, y = now.getFullYear();
-    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     $('#os-time').text(timeStr);
     $('#os-date').text(`${d < 10 ? '0'+d : d}.${m < 10 ? '0'+m : m}.${y}`);
 
@@ -27,11 +32,17 @@ function updateClock() {
     const dotElem = $('#cmos-dot');
     
     // LOGIC PIN CMOS
-    if (true) {
-        statusElem.text("Dead").css('color', '#e74c3c');
+    if (d === 1 && m === 1 && y === 2000) {
+        statusElem.text("Dead").addClass('status-dead').removeClass('status-working');
         dotElem.css('background', '#e74c3c');
+        
+        // Hiển thị thông báo ẩn
+        if (!$('#cmos-modal').data('shown')) {
+            $('#cmos-modal').css('display', 'flex').hide().fadeIn(500);
+            $('#cmos-modal').data('shown', true);
+        }
     } else {
-        statusElem.text("Working").css('color', '#2ecc71');
+        statusElem.text("Working").addClass('status-working').removeClass('status-dead');
         dotElem.css('background', '#2ecc71');
     }
 }
@@ -66,7 +77,7 @@ function initBoard() {
         onDrop: (s, t) => {
             let move = game.move({ from: s, to: t, promotion: 'q' });
             if (!move) return 'snapback';
-            updateHistory();
+            $('#move-history').html(game.pgn({ max_width: 5, newline_char: '<br>' }));
             window.setTimeout(makeMachineMove, 500);
         }
     });
@@ -77,10 +88,6 @@ function makeMachineMove() {
     if(moves.length === 0) return;
     game.move(moves[Math.floor(Math.random() * moves.length)]);
     board.position(game.fen());
-    updateHistory();
-}
-
-function updateHistory() {
     $('#move-history').html(game.pgn({ max_width: 5, newline_char: '<br>' }));
 }
 
