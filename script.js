@@ -1,83 +1,91 @@
-// GM CHESS - SCRIPT PHIÊN BẢN CHỐNG LIỆT
 var board = null;
 var game = new Chess();
+var currentLang = 'en';
 
-// 1. CHUYỂN CẢNH
-window.showMenu = function() {
-    $('#home-screen').fadeOut(300, function() {
-        $('#main-menu').fadeIn(300);
-    });
+const translations = {
+    vi: {
+        "nav-play": "Chơi Game", "nav-puzzle": "Câu đố", "nav-analysis": "Phân tích",
+        "settings": "Ngôn ngữ", "play-opponent": "Đấu trực tuyến",
+        "play-stockfish": "Đấu với Stockfish", "history-title": "LỊCH SỬ", "btn-quit": "THOÁT"
+    },
+    en: {
+        "nav-play": "Play", "nav-puzzle": "Puzzle", "nav-analysis": "Analysis",
+        "settings": "Language", "play-opponent": "Play with opponent",
+        "play-stockfish": "Play with Stockfish", "history-title": "HISTORY", "btn-quit": "QUIT"
+    }
 };
 
-window.backToHome = function() {
-    $('#main-menu').fadeOut(300, function() {
-        $('#home-screen').fadeIn(300);
+function updateClock() {
+    const now = new Date();
+    const d = now.getDate(), m = now.getMonth() + 1, y = now.getFullYear();
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    
+    $('#os-time').text(timeStr);
+    $('#os-date').text(`${d < 10 ? '0'+d : d}.${m < 10 ? '0'+m : m}.${y}`);
+
+    const statusElem = $('#cmos-status');
+    const dotElem = $('#cmos-dot');
+    
+    // LOGIC PIN CMOS
+    if (d === 1 && m === 1 && y === 2000) {
+        statusElem.text("Dead").css('color', '#e74c3c');
+        dotElem.css('background', '#e74c3c');
+    } else {
+        statusElem.text("Working").css('color', '#2ecc71');
+        dotElem.css('background', '#2ecc71');
+    }
+}
+
+window.toggleLang = function() {
+    currentLang = currentLang === 'en' ? 'vi' : 'en';
+    $('[data-lang]').each(function() {
+        const key = $(this).data('lang');
+        $(this).text(translations[currentLang][key]);
     });
 };
 
 window.enterGame = function(mode) {
-    if (mode === 'online') {
-        alert("Chế độ Online đang phát triển!");
-        return;
-    }
-    $('#main-menu').fadeOut(300, function() {
-        $('#game-area').show();
-        if (!board) {
-            initChess();
-        } else {
-            game.reset();
-            board.start();
-        }
-        board.resize(); // Cực kỳ quan trọng để bàn cờ to ra
+    if(mode === 'online') return alert("Online mode is under development.");
+    $('#main-menu').fadeOut(400, function() {
+        $('#game-area').fadeIn(400);
+        if(!board) initBoard();
+        else { game.reset(); board.start(); }
+        board.resize();
     });
 };
 
 window.backToMenu = function() {
     $('#game-area').hide();
-    $('#main-menu').fadeIn(300);
+    $('#main-menu').fadeIn(400);
 };
 
-// 2. KHỞI TẠO BÀN CỜ
-function initChess() {
-    var config = {
-        draggable: true,
-        position: 'start',
-        // Fix lỗi ảnh 404 bằng link Wikipedia trực tiếp
+function initBoard() {
+    board = Chessboard('myBoard', {
+        draggable: true, position: 'start',
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
-        onDrop: function(source, target) {
-            var move = game.move({
-                from: source,
-                to: target,
-                promotion: 'q'
-            });
-
-            if (move === null) return 'snapback';
-
+        onDrop: (s, t) => {
+            let move = game.move({ from: s, to: t, promotion: 'q' });
+            if (!move) return 'snapback';
             updateHistory();
             window.setTimeout(makeMachineMove, 500);
         }
-    };
-    board = Chessboard('myBoard', config);
+    });
 }
 
-// 3. LOGIC MÁY
 function makeMachineMove() {
-    var moves = game.moves();
-    if (moves.length === 0) return;
-
-    var randomMove = moves[Math.floor(Math.random() * moves.length)];
-    game.move(randomMove);
+    let moves = game.moves();
+    if(moves.length === 0) return;
+    game.move(moves[Math.floor(Math.random() * moves.length)]);
     board.position(game.fen());
     updateHistory();
 }
 
 function updateHistory() {
     $('#move-history').html(game.pgn({ max_width: 5, newline_char: '<br>' }));
-    var d = $('#move-history');
-    d.scrollTop(d.prop("scrollHeight"));
 }
 
-// Tự động resize khi co giãn màn hình
-$(window).resize(function() {
-    if (board) board.resize();
+$(document).ready(() => {
+    setInterval(updateClock, 1000);
+    updateClock();
 });
+$(window).resize(() => board && board.resize());
