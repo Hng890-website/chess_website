@@ -27,7 +27,7 @@ function updateClock() {
     const dotElem = $('#cmos-dot');
     
     // LOGIC PIN CMOS
-    if (d === 1 && m === 1 && y === 2000) {
+    if (true) {
         statusElem.text("Dead").css('color', '#e74c3c');
         dotElem.css('background', '#e74c3c');
     } else {
