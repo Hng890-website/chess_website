@@ -3,75 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GM CHESS OS</title>
+    <title>GM CHESS OS - PREMIUM</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="background-glow"></div>
 
-<div id="main-menu" class="os-container">
-    <aside class="os-sidebar">
-        <div class="os-logo">
-            <i class="fas fa-chess-knight"></i> GM<span>CHESS</span>
-        </div>
-        <nav class="os-nav">
-            <button class="nav-item active" data-lang="nav-play">Play</button>
-            <button class="nav-item" data-lang="nav-puzzle">Puzzle</button>
-            <button class="nav-item" data-lang="nav-analysis">Free Analysis</button>
-        </nav>
-        <div class="os-sidebar-footer">
-            <button class="nav-item-sm" onclick="window.toggleLang()">
-                <i class="fas fa-cog"></i> <span data-lang="settings">Settings/Language</span>
-            </button>
-            <button class="nav-item-sm">
-                <i class="fas fa-moon"></i> <span data-lang="dark-mode">Light/Dark mode</span>
-            </button>
-            <div class="version">Beta 1.0</div>
-        </div>
-    </aside>
-
-    <main class="os-content">
-        <div class="tiles-grid">
-            <div class="tile-card" onclick="window.enterGame('online')">
-                <div class="tile-icon"><i class="fas fa-chess-pawn"></i></div>
-                <div class="tile-label" data-lang="play-opponent">Play with opponent</div>
+    <div id="main-menu" class="os-container">
+        <aside class="os-sidebar">
+            <div class="os-logo">
+                <div class="logo-icon"><i class="fas fa-chess-knight"></i></div>
+                <span>GM</span>CHESS
             </div>
-
-            <div class="tile-card highlight" onclick="window.enterGame('ai')">
-                <div class="tile-icon"><i class="fas fa-fish"></i></div>
-                <div class="tile-label" data-lang="play-stockfish">Play with Stockfish</div>
+            <nav class="os-nav">
+                <button class="nav-item active" data-lang="nav-play">
+                    <i class="fas fa-play-circle"></i> Play
+                </button>
+                <button class="nav-item" data-lang="nav-puzzle">
+                    <i class="fas fa-puzzle-piece"></i> Puzzle
+                </button>
+                <button class="nav-item" data-lang="nav-analysis">
+                    <i class="fas fa-microchip"></i> Free Analysis
+                </button>
+            </nav>
+            <div class="os-sidebar-footer">
+                <div class="divider"></div>
+                <button class="nav-item-sm" onclick="window.toggleLang()">
+                    <i class="fas fa-language"></i> <span data-lang="settings">Language</span>
+                </button>
+                <div class="version">Build 2026.2.26</div>
             </div>
+        </aside>
 
-            <div class="tile-card info-tile">
-                <div class="time-display" id="os-time">12:00 AM</div>
-                <div class="date-display" id="os-date">01/01/2000</div>
-                <div class="system-status">
-                    CMOS Battery: <span id="cmos-status">Checking...</span>
+        <main class="os-content">
+            <header class="content-header">
+                <h1 data-lang="nav-play">Play</h1>
+                <div class="user-profile">
+                    <span>Guest Player</span>
+                    <div class="avatar">G</div>
+                </div>
+            </header>
+
+            <div class="tiles-grid">
+                <div class="tile-card glass-effect" onclick="window.enterGame('online')">
+                    <div class="tile-badge">Online</div>
+                    <div class="tile-icon main-icon"><i class="fas fa-users"></i></div>
+                    <div class="tile-info">
+                        <span class="tile-label" data-lang="play-opponent">Play with opponent</span>
+                        <p class="tile-desc">Find a match worldwide</p>
+                    </div>
+                </div>
+
+                <div class="tile-card glass-effect highlight" onclick="window.enterGame('ai')">
+                    <div class="tile-badge">AI Engine</div>
+                    <div class="tile-icon main-icon"><i class="fas fa-brain"></i></div>
+                    <div class="tile-info">
+                        <span class="tile-label" data-lang="play-stockfish">Play with Stockfish</span>
+                        <p class="tile-desc">Challenge the best AI</p>
+                    </div>
+                </div>
+
+                <div class="tile-card glass-effect widget-tile">
+                    <div class="widget-header">SYSTEM STATUS</div>
+                    <div class="widget-main">
+                        <div class="clock-group">
+                            <div id="os-time" class="big-time">--:-- --</div>
+                            <div id="os-date" class="sub-date">--.--.----</div>
+                        </div>
+                    </div>
+                    <div class="widget-footer">
+                        <div class="status-dot" id="cmos-dot"></div>
+                        CMOS Battery: <span id="cmos-status">Checking...</span>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
-</div>
+        </main>
+    </div>
 
-<div id="game-area" style="display:none;">
-    <div class="game-wrapper">
-        <div class="board-container">
-            <div id="myBoard"></div>
-        </div>
-        <div class="sidebar-game">
-            <div class="history-card">
-                <div class="header" data-lang="history-title">HISTORY</div>
-                <div id="move-history"></div>
+    <div id="game-area" style="display:none;">
+        <div class="game-wrapper">
+            <div class="board-container">
+                <div id="myBoard"></div>
             </div>
-            <button class="btn-exit" onclick="window.backToMenu()" data-lang="btn-quit">QUIT</button>
+            <div class="sidebar-game">
+                <div class="history-card">
+                    <div class="header" data-lang="history-title">HISTORY</div>
+                    <div id="move-history"></div>
+                </div>
+                <button class="btn-exit" onclick="window.backToMenu()" data-lang="btn-quit">QUIT</button>
+            </div>
         </div>
     </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-<script src="script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
