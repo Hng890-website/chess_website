@@ -1,60 +1,62 @@
 :root {
     --primary: #81b64c;
-    --accent: #588133;
-    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.4);
 }
 
-body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; background: var(--bg-gradient); }
+body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
 
 .background-glow {
     position: fixed; inset: 0; z-index: -1;
     background: radial-gradient(circle at 10% 20%, rgba(129, 182, 76, 0.1) 0%, transparent 40%);
 }
 
+/* Modal CMOS */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px);
+    display: none; align-items: center; justify-content: center; z-index: 9999;
+}
+.modal-box {
+    background: white; width: 400px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    overflow: hidden; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-header { padding: 15px 20px; background: #f8f9fa; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; }
+.modal-title { font-weight: bold; color: #e74c3c; font-size: 14px; }
+.modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #888; }
+.modal-body { padding: 30px 20px; text-align: center; color: #333; }
+.modal-footer { padding: 10px 20px; background: #f8f9fa; text-align: right; }
+.btn-modal-ok { padding: 8px 25px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer; }
+
+/* OS Layout */
 .os-container {
-    width: 95vw; height: 90vh; margin: 5vh auto;
-    background: var(--glass-bg); backdrop-filter: blur(15px);
-    border-radius: 24px; border: 1px solid var(--glass-border);
+    width: 95vw; height: 90vh; margin: 5vh auto; background: var(--glass-bg);
+    backdrop-filter: blur(15px); border-radius: 24px; border: 1px solid var(--glass-border);
     display: flex; box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
 }
-
-/* Sidebar */
 .os-sidebar { width: 260px; padding: 30px; border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; }
 .os-logo { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 800; margin-bottom: 40px; }
 .logo-icon { width: 40px; height: 40px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; }
 
 .os-nav { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-.nav-item { background: none; border: none; text-align: left; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-size: 16px; color: #555; transition: 0.3s; }
+.nav-item { background: none; border: none; text-align: left; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #555; transition: 0.3s; }
 .nav-item.active { background: rgba(129, 182, 76, 0.1); color: var(--primary); font-weight: bold; }
-.nav-item:hover { background: rgba(255, 255, 255, 0.5); }
 
-/* Main Content */
 .os-content { flex: 1; padding: 40px; overflow-y: auto; }
 .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-.user-profile { display: flex; align-items: center; gap: 15px; }
-.avatar { width: 35px; height: 35px; background: #333; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 
-/* Tiles Grid */
+/* Tiles */
 .tiles-grid { display: flex; gap: 20px; flex-wrap: wrap; }
-.tile-card { width: 220px; height: 240px; padding: 25px; border-radius: 20px; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
-.glass-effect { background: rgba(255, 255, 255, 0.5); border: 1px solid var(--glass-border); }
+.tile-card { width: 220px; height: 240px; padding: 25px; border-radius: 20px; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.5); border: 1px solid var(--glass-border); }
 .tile-card:hover { transform: translateY(-8px); background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
 
-.tile-badge { align-self: flex-end; font-size: 10px; background: var(--primary); color: white; padding: 3px 8px; border-radius: 10px; font-weight: bold; }
-.main-icon { font-size: 45px; color: var(--primary); margin: 15px 0; }
-.tile-label { font-weight: bold; font-size: 16px; display: block; }
-.tile-desc { font-size: 12px; color: #888; margin: 5px 0 0 0; }
-
-/* Widget Tile */
+/* Widget CMOS */
 .widget-tile { width: 400px; background: #1a1a1a !important; color: white; cursor: default; }
-.widget-tile:hover { transform: none; }
-.widget-header { font-size: 10px; color: var(--primary); letter-spacing: 1px; font-weight: bold; }
 .big-time { font-size: 42px; font-weight: bold; margin: 10px 0; }
 .sub-date { color: #888; font-weight: bold; }
-.widget-footer { margin-top: auto; display: flex; align-items: center; gap: 10px; font-size: 13px; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #2ecc71; }
+#cmos-status.status-dead { color: #e74c3c; font-weight: bold; }
+#cmos-status.status-working { color: #2ecc71; font-weight: bold; }
 
 /* Game Area */
 #game-area { height: 100vh; background: #161512; padding: 20px; }
@@ -62,5 +64,5 @@ body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: 
 .board-container { flex: 1; display: flex; justify-content: center; align-items: center; }
 #myBoard { width: 85vh; border: 5px solid #222; }
 .sidebar-game { width: 320px; display: flex; flex-direction: column; }
-.history-card { flex: 1; background: #262421; border-radius: 10px; color: white; overflow: hidden; }
+.history-card { flex: 1; background: #262421; border-radius: 10px; color: white; overflow: hidden; padding: 15px; }
 .btn-exit { margin-top: 15px; padding: 15px; background: #e74c3c; border: none; color: white; border-radius: 10px; cursor: pointer; font-weight: bold; }
