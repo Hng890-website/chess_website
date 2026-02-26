@@ -3,59 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GM CHESS - ELITE</title>
+    <title>GM CHESS - ULTIMATE</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="home-screen">
-    <div class="overlay"></div>
-    <div class="home-content">
-        <div class="hero-logo">
-            <i class="fas fa-chess-knight"></i>
-            <h1>GM<span>CHESS</span></h1>
-        </div>
-        <p>Thử thách trí tuệ cùng Stockfish Engine</p>
-        <div class="menu-buttons">
-            <button class="btn-hero" onclick="enterGame()">
-                <i class="fas fa-play"></i> CHƠI VỚI MÁY
-            </button>
-            <button class="btn-hero secondary">
-                <i class="fas fa-trophy"></i> BẢNG XẾP HẠNG
-            </button>
+    <div id="home-screen" class="full-screen">
+        <div class="glass-box">
+            <h1 class="logo-main"><i class="fas fa-chess-knight"></i> GM<span>CHESS</span></h1>
+            <p>Phiên bản Chinh Phục Đỉnh Everest</p>
+            <button class="btn-primary" onclick="window.showMenu()">BẮT ĐẦU</button>
         </div>
     </div>
-</div>
 
-<div class="app-wrapper">
-    <header class="game-header">
-        <div class="logo-sm">GM<span>CHESS</span></div>
-        <div class="status-indicator">● Engine: Stockfish 10</div>
-    </header>
-
-    <div class="game-container">
-        <div class="board-layout">
-            <div id="myBoard"></div>
-        </div>
-
-        <div class="sidebar">
-            <div class="glass-panel history-box">
-                <div class="panel-tag">LỊCH SỬ</div>
-                <div id="move-history"></div>
-            </div>
-            <div class="glass-panel controls">
-                <button id="resetBtn" class="btn-control">VÁN MỚI</button>
-                <button class="btn-control out" onclick="exitGame()">THOÁT</button>
+    <div id="main-menu" class="full-screen" style="display:none;">
+        <div class="glass-box">
+            <h2>MENU CHÍNH</h2>
+            <div class="menu-list">
+                <button class="btn-menu" onclick="window.enterGame('ai')"><i class="fas fa-robot"></i> CHƠI VỚI MÁY</button>
+                <button class="btn-menu" onclick="window.enterGame('online')"><i class="fas fa-globe"></i> ĐẤU ONLINE</button>
+                <button class="btn-menu secondary" onclick="window.backToHome()">QUAY LẠI</button>
             </div>
         </div>
     </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-<script src="script.js"></script>
+    <div id="game-area" style="display:none;">
+        <div class="game-wrapper">
+            <div class="board-container">
+                <div id="myBoard"></div>
+            </div>
+            <div class="sidebar">
+                <div class="move-history-card">
+                    <div class="card-header">LỊCH SỬ NƯỚC ĐI</div>
+                    <div id="move-history"></div>
+                </div>
+                <div class="controls">
+                    <button class="btn-danger" onclick="window.backToMenu()">THOÁT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
