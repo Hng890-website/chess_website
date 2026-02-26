@@ -1,58 +1,47 @@
 :root {
     --primary: #81b64c;
-    --dark: #161512;
-    --gold: #d4af37;
+    --border: #000;
+    --bg: #ffffff;
 }
 
-body {
-    margin: 0; background: var(--dark); color: white;
-    font-family: 'Segoe UI', sans-serif; overflow: hidden;
-}
+body { margin: 0; font-family: 'Arial', sans-serif; background: var(--bg); overflow: hidden; }
 
-.full-screen {
-    position: fixed; inset: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: center;
-    background: radial-gradient(circle, #2c3e50, #000);
-}
+/* OS Layout */
+.os-container { display: flex; height: 100vh; }
+.os-sidebar { width: 260px; border-right: 2px solid #eee; padding: 30px; display: flex; flex-direction: column; }
+.os-logo { font-size: 24px; font-weight: bold; margin-bottom: 40px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+.os-logo span { color: var(--primary); }
 
-.glass-box {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(15px);
-    padding: 60px; border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.1);
-    text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-}
+.os-nav { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+.nav-item { background: none; border: none; text-align: left; font-size: 18px; cursor: pointer; padding: 5px 0; color: #555; }
+.nav-item.active { color: #000; font-weight: bold; }
+.nav-item-sm { background: none; border: none; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-top: 15px; width: 100%; }
+.version { margin-top: 20px; font-size: 12px; color: #ccc; }
 
-.logo-main { font-size: 50px; margin: 0; letter-spacing: 3px; }
-.logo-main span { color: var(--primary); }
+/* Tiles */
+.os-content { flex: 1; padding: 60px; background: #fafafa; }
+.tiles-grid { display: flex; gap: 25px; flex-wrap: wrap; }
+.tile-card { width: 220px; height: 220px; border: 3px solid var(--border); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; background: #fff; transition: 0.2s; }
+.tile-card:hover { transform: translateY(-5px); box-shadow: 10px 10px 0px rgba(0,0,0,0.1); }
+.tile-icon { font-size: 70px; margin-bottom: 15px; }
+.tile-label { font-weight: bold; font-size: 16px; }
 
-/* Nút bấm */
-.btn-primary, .btn-menu, .btn-danger {
-    padding: 15px 40px; border: none; border-radius: 5px;
-    font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 20px;
-}
-.btn-primary, .btn-menu { background: var(--primary); color: white; width: 100%; }
-.btn-menu.secondary { background: #444; }
-.btn-danger { background: #b33939; color: white; width: 100%; }
-.btn-primary:hover { transform: scale(1.05); }
+/* Info Tile */
+.info-tile { width: 400px; align-items: flex-start; padding: 30px; cursor: default; }
+.info-tile:hover { transform: none; box-shadow: none; }
+.time-display { font-size: 40px; font-weight: bold; }
+.date-display { font-size: 20px; margin-bottom: 25px; color: #666; }
+.system-status { font-size: 15px; border-top: 1px solid #eee; padding-top: 15px; width: 100%; }
+#cmos-status.status-working { color: #2ecc71; font-weight: bold; }
+#cmos-status.status-dead { color: #e74c3c; font-weight: bold; }
 
-/* KHU VỰC GAME */
-.game-wrapper {
-    display: flex; height: 100vh; width: 100vw;
-    padding: 20px; box-sizing: border-box; gap: 30px;
-}
-
-.board-container {
-    flex: 1; display: flex; justify-content: center; align-items: center;
-}
-
-/* Bàn cờ siêu to */
-#myBoard {
-    width: 85vh; max-width: 850px;
-    border: 10px solid #262421; border-radius: 5px;
-}
-
-.sidebar { width: 320px; display: flex; flex-direction: column; gap: 15px; }
-.move-history-card { flex: 1; background: #262421; border-radius: 5px; overflow: hidden; display: flex; flex-direction: column; }
-.card-header { background: #312e2b; padding: 10px; text-align: center; font-size: 14px; }
-#move-history { padding: 10px; overflow-y: auto; flex: 1; font-family: monospace; }
+/* Game Area */
+#game-area { height: 100vh; background: #161512; color: #fff; padding: 20px; box-sizing: border-box; }
+.game-wrapper { display: flex; height: 100%; gap: 30px; justify-content: center; }
+.board-container { flex: 1; display: flex; justify-content: center; align-items: center; }
+#myBoard { width: 85vh; max-width: 800px; border: 5px solid #333; }
+.sidebar-game { width: 300px; display: flex; flex-direction: column; gap: 20px; }
+.history-card { flex: 1; background: #262421; border-radius: 5px; overflow: hidden; }
+.history-card .header { background: #312e2b; padding: 10px; text-align: center; font-weight: bold; }
+#move-history { padding: 15px; height: 400px; overflow-y: auto; font-family: monospace; }
+.btn-exit { padding: 15px; background: #b33939; border: none; color: #fff; font-weight: bold; border-radius: 5px; cursor: pointer; }
