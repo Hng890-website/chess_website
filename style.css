@@ -1,58 +1,58 @@
 :root {
     --primary: #81b64c;
-    --primary-hover: #a3d16a;
-    --bg-dark: #161512;
-    --glass: rgba(255, 255, 255, 0.05);
+    --dark: #161512;
     --gold: #d4af37;
 }
 
-body, html {
-    margin: 0; padding: 0; height: 100%;
-    background: var(--bg-dark);
-    color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+body {
+    margin: 0; background: var(--dark); color: white;
+    font-family: 'Segoe UI', sans-serif; overflow: hidden;
 }
 
-/* HOME SCREEN */
-#home-screen {
-    position: fixed; inset: 0; z-index: 999;
+.full-screen {
+    position: fixed; inset: 0; z-index: 100;
     display: flex; align-items: center; justify-content: center;
-    background: url('https://images.unsplash.com/photo-1529699211952-734e80c4d42b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+    background: radial-gradient(circle, #2c3e50, #000);
 }
-.overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.85); }
-.home-content { position: relative; text-align: center; }
-.hero-logo i { font-size: 80px; color: var(--primary); margin-bottom: 20px; }
-.hero-logo h1 { font-size: 60px; margin: 0; letter-spacing: 5px; }
-.hero-logo h1 span { color: var(--primary); }
-.menu-buttons { margin-top: 40px; display: flex; flex-direction: column; gap: 15px; }
 
-/* NÚT BẤM */
-.btn-hero {
-    padding: 15px 50px; font-size: 18px; font-weight: bold;
-    border: none; border-radius: 50px; cursor: pointer; transition: 0.3s;
-    background: var(--primary); color: white;
+.glass-box {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    padding: 60px; border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
-.btn-hero.secondary { background: var(--glass); border: 1px solid #555; }
-.btn-hero:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 
-/* GIAO DIỆN GAME */
-.app-wrapper { display: none; padding: 20px; height: 100vh; box-sizing: border-box; }
-.game-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--glass); }
-.game-container { display: flex; gap: 40px; justify-content: center; margin-top: 30px; }
+.logo-main { font-size: 50px; margin: 0; letter-spacing: 3px; }
+.logo-main span { color: var(--primary); }
 
-/* BÀN CỜ SIÊU TO */
-.board-layout { width: 80vh; max-width: 800px; }
-#myBoard { border-radius: 8px; border: 8px solid #262421; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); }
-
-/* SIDEBAR & GLASS PANEL */
-.sidebar { width: 350px; display: flex; flex-direction: column; gap: 20px; }
-.glass-panel { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; }
-.history-box { flex: 1; height: 400px; overflow-y: auto; }
-#move-history { display: grid; grid-template-columns: 40px 1fr 1fr; gap: 10px; font-family: 'Courier New', Courier, monospace; }
-
-.btn-control {
-    width: 100%; padding: 12px; margin-bottom: 10px;
-    border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
-    background: var(--primary); color: white; transition: 0.2s;
+/* Nút bấm */
+.btn-primary, .btn-menu, .btn-danger {
+    padding: 15px 40px; border: none; border-radius: 5px;
+    font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 20px;
 }
-.btn-control.out { background: #444; }
-.btn-control:hover { opacity: 0.8; }
+.btn-primary, .btn-menu { background: var(--primary); color: white; width: 100%; }
+.btn-menu.secondary { background: #444; }
+.btn-danger { background: #b33939; color: white; width: 100%; }
+.btn-primary:hover { transform: scale(1.05); }
+
+/* KHU VỰC GAME */
+.game-wrapper {
+    display: flex; height: 100vh; width: 100vw;
+    padding: 20px; box-sizing: border-box; gap: 30px;
+}
+
+.board-container {
+    flex: 1; display: flex; justify-content: center; align-items: center;
+}
+
+/* Bàn cờ siêu to */
+#myBoard {
+    width: 85vh; max-width: 850px;
+    border: 10px solid #262421; border-radius: 5px;
+}
+
+.sidebar { width: 320px; display: flex; flex-direction: column; gap: 15px; }
+.move-history-card { flex: 1; background: #262421; border-radius: 5px; overflow: hidden; display: flex; flex-direction: column; }
+.card-header { background: #312e2b; padding: 10px; text-align: center; font-size: 14px; }
+#move-history { padding: 10px; overflow-y: auto; flex: 1; font-family: monospace; }
