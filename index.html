@@ -11,6 +11,21 @@
 <body>
     <div class="background-glow"></div>
 
+    <div id="cmos-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span class="modal-title"><i class="fas fa-exclamation-triangle"></i> CMOS problem</span>
+                <button class="modal-close" onclick="window.closeCmosModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Your CMOS battery is dead, please contact support to fix it.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-ok" onclick="window.closeCmosModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
     <div id="main-menu" class="os-container">
         <aside class="os-sidebar">
             <div class="os-logo">
