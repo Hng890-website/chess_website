@@ -3,52 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GM CHESS - ULTIMATE</title>
+    <title>GM CHESS OS</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="home-screen" class="full-screen">
-        <div class="glass-box">
-            <h1 class="logo-main"><i class="fas fa-chess-knight"></i> GM<span>CHESS</span></h1>
-            <p>Phiên bản Chinh Phục Đỉnh Everest</p>
-            <button class="btn-primary" onclick="window.showMenu()">BẮT ĐẦU</button>
+<div id="main-menu" class="os-container">
+    <aside class="os-sidebar">
+        <div class="os-logo">
+            <i class="fas fa-chess-knight"></i> GM<span>CHESS</span>
         </div>
-    </div>
-
-    <div id="main-menu" class="full-screen" style="display:none;">
-        <div class="glass-box">
-            <h2>MENU CHÍNH</h2>
-            <div class="menu-list">
-                <button class="btn-menu" onclick="window.enterGame('ai')"><i class="fas fa-robot"></i> CHƠI VỚI MÁY</button>
-                <button class="btn-menu" onclick="window.enterGame('online')"><i class="fas fa-globe"></i> ĐẤU ONLINE</button>
-                <button class="btn-menu secondary" onclick="window.backToHome()">QUAY LẠI</button>
-            </div>
+        <nav class="os-nav">
+            <button class="nav-item active" data-lang="nav-play">Play</button>
+            <button class="nav-item" data-lang="nav-puzzle">Puzzle</button>
+            <button class="nav-item" data-lang="nav-analysis">Free Analysis</button>
+        </nav>
+        <div class="os-sidebar-footer">
+            <button class="nav-item-sm" onclick="window.toggleLang()">
+                <i class="fas fa-cog"></i> <span data-lang="settings">Settings/Language</span>
+            </button>
+            <button class="nav-item-sm">
+                <i class="fas fa-moon"></i> <span data-lang="dark-mode">Light/Dark mode</span>
+            </button>
+            <div class="version">Beta 1.0</div>
         </div>
-    </div>
+    </aside>
 
-    <div id="game-area" style="display:none;">
-        <div class="game-wrapper">
-            <div class="board-container">
-                <div id="myBoard"></div>
+    <main class="os-content">
+        <div class="tiles-grid">
+            <div class="tile-card" onclick="window.enterGame('online')">
+                <div class="tile-icon"><i class="fas fa-chess-pawn"></i></div>
+                <div class="tile-label" data-lang="play-opponent">Play with opponent</div>
             </div>
-            <div class="sidebar">
-                <div class="move-history-card">
-                    <div class="card-header">LỊCH SỬ NƯỚC ĐI</div>
-                    <div id="move-history"></div>
+
+            <div class="tile-card highlight" onclick="window.enterGame('ai')">
+                <div class="tile-icon"><i class="fas fa-fish"></i></div>
+                <div class="tile-label" data-lang="play-stockfish">Play with Stockfish</div>
+            </div>
+
+            <div class="tile-card info-tile">
+                <div class="time-display" id="os-time">12:00 AM</div>
+                <div class="date-display" id="os-date">01/01/2000</div>
+                <div class="system-status">
+                    CMOS Battery: <span id="cmos-status">Checking...</span>
                 </div>
-                <div class="controls">
-                    <button class="btn-danger" onclick="window.backToMenu()">THOÁT</button>
-                </div>
             </div>
         </div>
-    </div>
+    </main>
+</div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-    <script src="script.js"></script>
+<div id="game-area" style="display:none;">
+    <div class="game-wrapper">
+        <div class="board-container">
+            <div id="myBoard"></div>
+        </div>
+        <div class="sidebar-game">
+            <div class="history-card">
+                <div class="header" data-lang="history-title">HISTORY</div>
+                <div id="move-history"></div>
+            </div>
+            <button class="btn-exit" onclick="window.backToMenu()" data-lang="btn-quit">QUIT</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
