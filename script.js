@@ -1,128 +1,131 @@
 /**
- * GM CHESS OS - SCRIPT HỆ THỐNG
- * Đã khử lỗi jQuery $ undefined
+ * GM CHESS OS - CORE SYSTEM (STOCKFISH 18 EDITION)
+ * Tính năng: Kiểm tra CMOS thông minh + Điều hướng giao diện mượt
  */
 
-// Biến toàn cục
-var board = null;
-var game = new Chess();
-var currentLang = 'en';
+// --- 1. BIẾN TOÀN CỤC ---
+let board = null;
+const game = new Chess();
 
-// --- 1. XỬ LÝ HỘP THOẠI (MODAL) ---
-window.closeCmosModal = function() {
-    const modal = document.getElementById('cmos-modal');
-    if (modal) {
-        modal.style.opacity = '0';
-        setTimeout(() => { modal.style.display = 'none'; }, 300);
-    }
-};
-
-// --- 2. HỆ THỐNG THỜI GIAN & CMOS ---
-function updateSystem() {
+// --- 2. HỆ THỐNG KIỂM TRA CMOS "THÁM TỬ" ---
+function checkCmosIntegrity() {
     const now = new Date();
+    const currentTime = now.getTime();
     
-    /** * MẸO TEST: Để xem thông báo CMOS Dead, hãy bỏ dấu gạch chéo ở 3 dòng dưới:
-     */
-    // now.setFullYear(2000); 
-    // now.setMonth(0); 
-    // now.setDate(1);
+    // Lấy "dấu vết" thời gian cuối cùng máy còn sống từ bộ nhớ trình duyệt
+    const lastSeen = localStorage.getItem('os_last_shutdown');
+    let isCmosDead = false;
 
-    const d = now.getDate();
-    const m = now.getMonth() + 1;
-    const y = now.getFullYear();
+    // A. Kiểm tra năm reset mặc định (Y2K/BIOS Default)
+    if (now.getFullYear() === 2000) {
+        isCmosDead = true;
+    }
 
-    // Cập nhật văn bản thời gian
-    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    const dateStr = (d < 10 ? '0' + d : d) + '.' + (m < 10 ? '0' + m : m) + '.' + y;
+    // B. Kiểm tra "Nghịch lý thời gian": 
+    // Nếu giờ hiện tại lại CŨ hơn giờ đã lưu trước đó -> Chắc chắn CMOS bị reset
+    if (lastSeen && currentTime < parseInt(lastSeen)) {
+        isCmosDead = true;
+        // Ghi nhớ vĩnh viễn trạng thái lỗi này
+        localStorage.setItem('cmos_permanent_error', 'true');
+    }
 
-    if (document.getElementById('os-time')) document.getElementById('os-time').textContent = timeStr;
-    if (document.getElementById('os-date')) document.getElementById('os-date').textContent = dateStr;
+    // C. Kiểm tra trạng thái lỗi đã lưu
+    if (localStorage.getItem('cmos_permanent_error') === 'true') {
+        isCmosDead = true;
+    }
 
-    // Kiểm tra tình trạng pin CMOS
+    // Cập nhật giao diện
+    renderSystemStatus(now, isCmosDead);
+
+    // Luôn lưu lại thời gian hiện tại làm mốc so sánh cho lần sau
+    localStorage.setItem('os_last_shutdown', currentTime);
+}
+
+function renderSystemStatus(now, isDead) {
+    const timeElem = document.getElementById('os-time');
+    const dateElem = document.getElementById('os-date');
     const statusText = document.getElementById('cmos-status');
-    const statusDot = document.getElementById('cmos-dot');
+    const dot = document.getElementById('cmos-dot');
     const modal = document.getElementById('cmos-modal');
 
-    if (d === 1 && m === 1 && y === 2000) {
-        if (statusText) {
-            statusText.textContent = "Dead";
-            statusText.className = "status-dead";
-        }
-        if (statusDot) statusDot.style.background = "#ff4d4f";
+    if (timeElem) timeElem.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    if (dateElem) dateElem.textContent = `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`;
+
+    if (isDead) {
+        if (statusText) statusText.textContent = "Dead";
+        if (dot) dot.style.background = "#ff4d4f"; // Màu đỏ cảnh báo
         
-        // Hiện thông báo ẩn nếu chưa hiện lần nào
-        if (modal && modal.getAttribute('data-shown') !== 'true') {
-            modal.style.display = 'flex';
-            setTimeout(() => { modal.style.opacity = '1'; }, 10);
-            modal.setAttribute('data-shown', 'true');
+        // Hiện thông báo Modal (chỉ hiện 1 lần mỗi phiên làm việc)
+        if (modal && !sessionStorage.getItem('modal_shown')) {
+            $(modal).fadeIn(500).css('display', 'flex');
+            sessionStorage.setItem('modal_shown', 'true');
         }
     } else {
-        if (statusText) {
-            statusText.textContent = "Working";
-            statusText.className = "status-working";
-        }
-        if (statusDot) statusDot.style.background = "#52c41a";
+        if (statusText) statusText.textContent = "Working";
+        if (dot) dot.style.background = "#81b64c"; // Màu xanh hoạt động
     }
 }
 
-// --- 3. ĐIỀU HƯỚNG MÀN HÌNH ---
-window.enterGame = function(mode) {
-    // Ẩn Menu, hiện vùng Game
-    document.getElementById('main-menu').style.display = 'none';
-    const gameArea = document.getElementById('game-area');
-    gameArea.style.display = 'block';
+// --- 3. ĐIỀU HƯỚNG GIAO DIỆN (UI NAVIGATION) ---
+window.closeCmosModal = function() {
+    $('#cmos-modal').fadeOut(300);
+};
 
-    // Khởi tạo bàn cờ nếu chưa có
-    if (!board) {
-        board = Chessboard('myBoard', {
-            draggable: true,
-            position: 'start',
-            pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
-            onDrop: handleMove
-        });
-    }
-    setTimeout(() => { board.resize(); }, 100);
+window.enterGame = function(mode) {
+    // Hiệu ứng Fade out màn hình chính và Fade in bàn cờ
+    $('.os-wrapper').addClass('fade-out');
+    setTimeout(() => {
+        $('.os-wrapper').hide();
+        $('#game-area').fadeIn(600).css('display', 'flex');
+        initChessBoard();
+    }, 400);
 };
 
 window.backToMenu = function() {
-    // Reload là cách nhanh nhất để reset trạng thái sạch sẽ
-    window.location.reload();
+    $('#game-area').fadeOut(400, () => {
+        $('.os-wrapper').show().removeClass('fade-out');
+        if (board) board.destroy();
+        board = null;
+    });
 };
 
-// --- 4. LOGIC CỜ VUA ---
-function handleMove(source, target) {
-    let move = game.move({ from: source, to: target, promotion: 'q' });
-    if (move === null) return 'snapback';
-
-    updateHistory();
-    window.setTimeout(makeRandomMove, 250);
+// --- 4. LOGIC CỜ VUA (CHESS ENGINE SIMULATION) ---
+function initChessBoard() {
+    if (board) return;
+    
+    const config = {
+        draggable: true,
+        position: 'start',
+        pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
+        onDrop: (source, target) => {
+            const move = game.move({ from: source, to: target, promotion: 'q' });
+            if (move === null) return 'snapback';
+            
+            // Giả lập Stockfish 18 phản hồi sau 600ms
+            window.setTimeout(makeAIMove, 600);
+        }
+    };
+    board = Chessboard('myBoard', config);
+    $(window).resize(board.resize);
 }
 
-function makeRandomMove() {
-    let possibleMoves = game.moves();
-    if (possibleMoves.length === 0) return;
-
-    let randomIdx = Math.floor(Math.random() * possibleMoves.length);
-    game.move(possibleMoves[randomIdx]);
+function makeAIMove() {
+    const moves = game.moves();
+    if (moves.length === 0) return;
+    
+    const randomMove = moves[Math.floor(Math.random() * moves.length)];
+    game.move(randomMove);
     board.position(game.fen());
-    updateHistory();
 }
 
-function updateHistory() {
-    const historyElem = document.getElementById('move-history');
-    if (historyElem) {
-        historyElem.innerHTML = game.pgn({ max_width: 5, newline_char: '<br>' });
-        historyElem.scrollTop = historyElem.scrollHeight;
-    }
-}
+// --- 5. KHỞI CHẠY HỆ THỐNG ---
+$(document).ready(() => {
+    // Chạy kiểm tra CMOS ngay lập tức và lặp lại mỗi giây
+    checkCmosIntegrity();
+    setInterval(checkCmosIntegrity, 1000);
 
-// Khởi chạy khi tải trang
-document.addEventListener('DOMContentLoaded', () => {
-    setInterval(updateSystem, 1000);
-    updateSystem();
+    // Thêm hiệu ứng âm thanh nhẹ khi click vào các Tile (tùy chọn)
+    $('.interact').on('click', function() {
+        console.log("System: Navigating to " + $(this).find('h3').text());
+    });
 });
-
-// Resize bàn cờ khi co dãn cửa sổ
-window.onresize = function() {
-    if (board) board.resize();
-};
