@@ -1,133 +1,106 @@
 /**
- * GM CHESS OS - CORE SYSTEM (STOCKFISH 18)
- * Đã sửa lỗi không hiển thị bàn cờ và tích hợp cảm biến CMOS
+ * GM CHESS OS - ENGINE: STOCKFISH 16.1 (Real AI)
+ * Giao diện: Fluent Design & Glassmorphism
  */
 
 let board = null;
-const game = new Chess();
+let game = new Chess();
+// Khởi tạo Stockfish từ URL chính thức (Web Worker)
+const stockfish = new Worker('https://nmrugg.github.io/stockfish.js/stockfish.js');
 
-// --- 1. HỆ THỐNG CMOS (THÁM TỬ THỜI GIAN) ---
-function checkCmosIntegrity() {
-    const now = new Date();
-    const currentTime = now.getTime();
-    const lastSeen = localStorage.getItem('os_last_shutdown');
-    let isCmosDead = false;
-
-    // Kiểm tra nếu năm bị reset về 2000 hoặc thời gian chạy ngược
-    if (now.getFullYear() === 2000 || (lastSeen && currentTime < parseInt(lastSeen))) {
-        isCmosDead = true;
-        localStorage.setItem('cmos_permanent_error', 'true');
+// --- 1. ENGINE STOCKFISH LOGIC ---
+stockfish.onmessage = function(event) {
+    const line = event.data;
+    // Khi Stockfish tìm ra nước đi tốt nhất
+    if (line.indexOf('bestmove') > -1) {
+        const moveStr = line.split(' ')[1];
+        const move = game.move({
+            from: moveStr.substring(0, 2),
+            to: moveStr.substring(2, 4),
+            promotion: 'q'
+        });
+        
+        board.position(game.fen());
+        updateUI();
     }
+};
 
-    if (localStorage.getItem('cmos_permanent_error') === 'true') isCmosDead = true;
-
-    renderSystemStatus(now, isCmosDead);
-    localStorage.setItem('os_last_shutdown', currentTime);
+function askStockfish() {
+    // Gửi vị trí hiện tại và yêu cầu AI tính toán trong 1 giây
+    stockfish.postMessage('position fen ' + game.fen());
+    stockfish.postMessage('go movetime 1000'); 
 }
 
-function renderSystemStatus(now, isDead) {
-    const timeElem = document.getElementById('os-time');
-    const dateElem = document.getElementById('os-date');
-    const statusText = document.getElementById('cmos-status');
+// --- 2. HỆ THỐNG CMOS (ANTI-CHEAT TIME) ---
+function checkCmosSystem() {
+    const now = new Date();
+    const lastTime = localStorage.getItem('os_last_time');
+    let isDead = false;
+
+    // Phát hiện pin chết: Năm 2000 hoặc thời gian bị lùi ngược
+    if (now.getFullYear() === 2000 || (lastTime && now.getTime() < parseInt(lastTime))) {
+        isDead = true;
+        localStorage.setItem('cmos_permanent_dead', 'true');
+    }
+
+    if (localStorage.getItem('cmos_permanent_dead') === 'true') isDead = true;
+
+    // Cập nhật giao diện Widget
+    document.getElementById('os-time').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('os-date').textContent = `${now.getDate()}.${now.getMonth()+1}.${now.getFullYear()}`;
+    
+    const status = document.getElementById('cmos-status');
     const dot = document.getElementById('cmos-dot');
-    const modal = document.getElementById('cmos-modal');
-
-    if (timeElem) timeElem.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    if (dateElem) dateElem.textContent = `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`;
-
+    
     if (isDead) {
-        if (statusText) statusText.textContent = "Dead";
-        if (dot) dot.style.background = "#ff4d4f";
-        if (modal && !sessionStorage.getItem('modal_shown')) {
-            $(modal).fadeIn(500).css('display', 'flex');
+        status.textContent = "Dead";
+        status.style.color = "#ff4d4f";
+        dot.style.background = "#ff4d4f";
+        if (!sessionStorage.getItem('modal_shown')) {
+            $('#cmos-modal').css('display', 'flex').hide().fadeIn(400);
             sessionStorage.setItem('modal_shown', 'true');
         }
     } else {
-        if (statusText) statusText.textContent = "Working";
-        if (dot) dot.style.background = "#81b64c";
+        status.textContent = "Working";
+        status.style.color = "#81b64c";
+        dot.style.background = "#81b64c";
     }
+    localStorage.setItem('os_last_time', now.getTime());
 }
 
-// --- 2. ĐIỀU HƯỚNG & KHỞI TẠO BÀN CỜ ---
-window.closeCmosModal = function() {
-    $('#cmos-modal').fadeOut(300);
-};
-
-window.enterGame = function(mode) {
-    // 1. Hiệu ứng chuyển cảnh
-    $('.os-wrapper').fadeOut(400, function() {
-        $('#game-area').fadeIn(400, function() {
-            // 2. CHỈ KHỞI TẠO SAU KHI VÙNG GAME ĐÃ HIỆN (Để tránh lỗi width = 0)
-            initChessBoard();
+// --- 3. QUẢN LÝ BÀN CỜ ---
+window.enterGame = function() {
+    $('.os-wrapper').fadeOut(300, () => {
+        $('#game-area').fadeIn(300, () => {
+            if (!board) {
+                board = Chessboard('myBoard', {
+                    draggable: true,
+                    position: 'start',
+                    pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
+                    onDrop: (source, target) => {
+                        let move = game.move({ from: source, to: target, promotion: 'q' });
+                        if (!move) return 'snapback';
+                        updateUI();
+                        window.setTimeout(askStockfish, 250);
+                    }
+                });
+            }
+            board.resize();
         });
     });
 };
 
-function initChessBoard() {
-    // Nếu bàn cờ đã tồn tại thì chỉ reset vị trí
-    if (board) {
-        board.start();
-        game.reset();
-        return;
-    }
-
-    const config = {
-        draggable: true,
-        position: 'start',
-        // Đảm bảo đường dẫn ảnh quân cờ chính xác
-        pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
-        onDrop: handleMove
-    };
-
-    // Khởi tạo vào thẻ <div id="myBoard">
-    board = Chessboard('myBoard', config);
-    
-    // Ép bàn cờ tính toán lại kích thước khung hình
-    setTimeout(() => { board.resize(); }, 100);
+function updateUI() {
+    $('#move-history').html(game.pgn({ max_width: 5, newline_char: '<br>' }));
+    const history = document.getElementById('move-history');
+    history.scrollTop = history.scrollHeight;
 }
 
-// --- 3. LOGIC TRẬN ĐẤU ---
-function handleMove(source, target) {
-    const move = game.move({ from: source, to: target, promotion: 'q' });
-    
-    if (move === null) return 'snapback';
+window.closeCmosModal = () => $('#cmos-modal').fadeOut(300);
+window.backToMenu = () => location.reload();
 
-    updateHistory();
-    // Giả lập Stockfish 18 phản hồi
-    window.setTimeout(makeAIMove, 500);
-}
-
-function makeAIMove() {
-    const moves = game.moves();
-    if (moves.length === 0) return;
-    
-    const randomMove = moves[Math.floor(Math.random() * moves.length)];
-    game.move(randomMove);
-    board.position(game.fen());
-    updateHistory();
-}
-
-function updateHistory() {
-    const historyElem = document.getElementById('move-history');
-    if (historyElem) {
-        historyElem.innerHTML = game.pgn({ max_width: 5, newline_char: '<br>' });
-        historyElem.scrollTop = historyElem.scrollHeight;
-    }
-}
-
-window.backToMenu = function() {
-    $('#game-area').fadeOut(400, () => {
-        $('.os-wrapper').fadeIn(400);
-    });
-};
-
-// --- 4. KHỞI CHẠY ---
 $(document).ready(() => {
-    checkCmosIntegrity();
-    setInterval(checkCmosIntegrity, 1000);
-});
-
-// Sửa lỗi bàn cờ bị lệch khi co giãn trình duyệt
-$(window).resize(() => {
-    if (board) board.resize();
+    setInterval(checkCmosSystem, 1000);
+    checkCmosSystem();
+    stockfish.postMessage('uci'); // Kích hoạt Stockfish
 });
