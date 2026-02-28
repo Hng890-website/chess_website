@@ -1,52 +1,58 @@
 :root {
-    --glass: rgba(255, 255, 255, 0.08);
-    --border: rgba(255, 255, 255, 0.15);
     --primary: #c9ff85;
+    --glass: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.1);
 }
 
 body {
-    margin: 0; background: #050505; color: #fff;
-    font-family: 'Inter', system-ui, sans-serif; height: 100vh;
-    display: flex; align-items: center; justify-content: center;
+    margin: 0; padding: 0; background: #0a0a0b;
+    color: #fff; font-family: 'Segoe UI', system-ui, sans-serif;
+    height: 100vh; display: flex; align-items: center; justify-content: center;
 }
 
-/* HIỆU ỨNG KÍNH MỜ */
-.os-shell {
-    width: 92vw; height: 85vh;
+/* NỀN KÍNH MỜ */
+.os-container {
+    width: 90vw; height: 85vh;
     background: var(--glass);
-    backdrop-filter: blur(30px) saturate(150%);
-    border: 1px solid var(--border);
-    border-radius: 24px; display: flex;
-    box-shadow: 0 50px 100px rgba(0,0,0,0.6);
-    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(25px) saturate(160%);
+    border-radius: 28px; border: 1px solid var(--border);
+    display: flex; overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+    transition: 0.4s ease;
 }
 
-.scale-down { transform: scale(0.9); opacity: 0; }
-
-/* SIDEBAR */
-.sidebar { width: 260px; padding: 40px; border-right: 1px solid var(--border); }
+.sidebar { width: 260px; padding: 30px; border-right: 1px solid var(--border); }
 .nav-btn {
-    width: 100%; padding: 12px; margin-bottom: 8px;
-    background: transparent; border: 1px solid transparent; border-radius: 12px;
-    color: #888; text-align: left; cursor: pointer; transition: 0.2s;
+    width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px;
+    background: transparent; border: none; color: #999; text-align: left;
+    cursor: pointer; transition: 0.3s;
 }
-.nav-btn.active { background: rgba(255,255,255,0.1); color: #fff; border-color: var(--border); }
+.nav-btn.active { background: rgba(255,255,255,0.1); color: #fff; }
 
-/* WIDGET STATUS */
+/* WIDGET THỜI GIAN */
 .status-card {
-    background: #000; padding: 30px; border-radius: 20px; width: 320px;
-    border: 1px solid #222;
+    background: #000; padding: 30px; border-radius: 20px; width: 340px;
+    border: 1px solid #222; margin-top: 20px;
 }
-#os-time { font-size: 48px; font-weight: 800; letter-spacing: -2px; }
-#os-date { color: var(--primary); font-weight: 600; }
+#os-time { font-size: 52px; font-weight: 800; display: block; line-height: 1; }
+#os-date { color: var(--primary); font-size: 18px; font-weight: 600; margin-bottom: 20px; display: block; }
 
-.status-tag { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; }
-.status-tag.fine { background: #1a331a; color: #4ade80; }
-.status-tag.dead { background: #331a1a; color: #f87171; }
+.status-tag { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 6px; }
+.healthy { background: #1a331a; color: #4ade80; }
+.dead { background: #331a1a; color: #f87171; }
 
-/* GAME INTERFACE */
-#game-screen { display: none; position: fixed; inset: 0; background: #000; align-items: center; justify-content: center; gap: 40px; }
-#myBoard { width: 60vh; max-width: 600px; border: 8px solid #1a1a1a; border-radius: 8px; }
+/* BÀN CỜ - CĂN CHỈNH CHUẨN */
+#game-screen {
+    display: none; position: fixed; inset: 0; background: #000;
+    align-items: center; justify-content: center; gap: 40px;
+}
+#myBoard { width: 60vh; max-width: 600px; border: 8px solid #1a1a1a; border-radius: 4px; }
+.game-sidebar { width: 300px; height: 60vh; display: flex; flex-direction: column; }
+#history-log { flex: 1; background: #0e0e0e; padding: 20px; border-radius: 12px; font-family: monospace; overflow-y: auto; color: #666; }
 
-.history-panel { width: 300px; height: 60vh; display: flex; flex-direction: column; }
-#history-box { flex: 1; background: #0a0a0a; border: 1px solid #222; padding: 20px; border-radius: 12px; overflow-y: auto; font-family: monospace; color: #666; }
+/* MODAL */
+.modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+    display: none; align-items: center; justify-content: center; z-index: 1000;
+}
+.modal-content { background: #1a1a1a; padding: 40px; border-radius: 20px; text-align: center; border: 1px solid #333; }
