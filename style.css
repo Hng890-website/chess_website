@@ -1,71 +1,77 @@
 :root {
-    --bg-color: #f0f2f5;
     --primary: #81b64c;
-    --accent: #4a90e2;
-    --danger: #ff4d4f;
-    --text: #1a1d23;
-    --glass-bg: rgba(255, 255, 255, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.3);
+    --dark-bg: #111111;
+    --glass: rgba(255, 255, 255, 0.08);
+    --border: rgba(255, 255, 255, 0.12);
 }
 
 body {
-    margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh;
-    background: #e9ecef; overflow: hidden; color: var(--text);
+    margin: 0; background: #080808; color: white;
+    font-family: 'Segoe UI', system-ui, sans-serif; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
 }
 
-.wallpaper-glow {
-    position: fixed; inset: 0; z-index: -1;
-    background: radial-gradient(circle at 10% 20%, rgba(129, 182, 76, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(74, 144, 226, 0.1) 0%, transparent 40%);
-}
-
-.glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(15px);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.05);
-}
-
-/* CONTAINER OS */
+/* Hiệu ứng kính mờ OS */
 .os-wrapper {
-    width: 95vw; height: 90vh; margin: 5vh auto;
-    border-radius: 24px; display: flex; overflow: hidden;
+    width: 94vw; height: 88vh;
+    background: var(--glass); backdrop-filter: blur(25px);
+    border-radius: 32px; border: 1px solid var(--border);
+    display: flex; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.5);
 }
 
-/* SIDEBAR */
-.sidebar { width: 260px; padding: 30px; display: flex; flex-direction: column; border-right: 1px solid var(--glass-border); }
-.brand { display: flex; align-items: center; gap: 12px; font-size: 20px; margin-bottom: 40px; }
-.logo-box { width: 35px; height: 35px; background: var(--primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-
-.menu-item {
-    width: 100%; padding: 12px 15px; margin-bottom: 8px; border: none; background: transparent;
-    border-radius: 12px; text-align: left; cursor: pointer; transition: 0.3s;
-    display: flex; align-items: center; gap: 12px; color: #555; font-size: 15px;
+/* Sidebar tinh tế */
+.sidebar { width: 280px; padding: 40px; border-right: 1px solid var(--border); }
+.nav-item {
+    width: 100%; padding: 14px 20px; margin-bottom: 10px;
+    background: transparent; border: none; border-radius: 14px;
+    color: #aaa; text-align: left; cursor: pointer; transition: 0.3s;
 }
-.menu-item.active { background: white; color: var(--primary); font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-.menu-item:hover:not(.active) { background: rgba(255,255,255,0.4); transform: translateX(5px); }
+.nav-item.active { background: white; color: black; font-weight: bold; }
+.nav-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: white; }
 
-/* TILES */
-.grid-container { display: flex; gap: 20px; padding-top: 20px; }
+/* Dashboard Tiles */
+.content { flex: 1; padding: 60px; }
+.tiles-grid { display: flex; gap: 30px; }
 .tile-card {
-    width: 300px; padding: 25px; border-radius: 20px; position: relative;
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer;
+    width: 260px; padding: 30px; border-radius: 24px;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    cursor: pointer; transition: 0.4s cubic-bezier(0.2, 1, 0.3, 1);
 }
-.tile-card.interact:hover { transform: translateY(-10px) scale(1.02); background: white; }
+.tile-card:hover { 
+    background: rgba(255,255,255,0.07); transform: translateY(-10px);
+    border-color: var(--primary);
+}
 
-.tile-icon-bg { font-size: 32px; color: var(--primary); margin-bottom: 15px; }
-.tile-text h3 { margin: 0; font-size: 18px; }
-.tile-text p { margin: 5px 0 0; font-size: 13px; color: #777; }
-
-/* WIDGET STATUS */
-.status-tile { width: 350px; background: #1a1d23 !important; color: white; cursor: default; }
-.clock-display { padding: 20px 0; }
-.clock-display span { font-size: 42px; font-weight: 800; display: block; }
-.clock-display small { color: var(--primary); font-weight: bold; font-size: 16px; }
-.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+/* Status Widget */
+.status-tile { width: 400px; background: #000 !important; }
+.clock-display span { font-size: 56px; font-weight: 800; line-height: 1; }
+.clock-display small { color: var(--primary); font-size: 20px; font-weight: 600; }
 
 /* MODAL */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 1000; }
-.modal-box { width: 400px; padding: 25px; border-radius: 20px; text-align: center; }
-.modal-header { display: flex; justify-content: space-between; color: var(--danger); font-weight: bold; margin-bottom: 15px; }
-.btn-primary { background: var(--text); color: white; border: none; padding: 10px 30px; border-radius: 10px; cursor: pointer; }
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    display: none; align-items: center; justify-content: center; z-index: 9999;
+}
+.modal-box {
+    background: #1a1a1a; width: 420px; padding: 40px; border-radius: 28px;
+    text-align: center; border: 1px solid #333;
+}
+
+/* GAME AREA - CÂN ĐỐI HOÀN HẢO */
+#game-area {
+    display: none; position: fixed; inset: 0; background: #000;
+    align-items: center; justify-content: center; gap: 50px; z-index: 5000;
+}
+#myBoard {
+    width: 65vh; max-width: 600px; /* Giới hạn để không bị to quá */
+    border: 10px solid #222; border-radius: 8px;
+}
+.game-controls { width: 320px; height: 65vh; display: flex; flex-direction: column; }
+#move-history {
+    flex: 1; background: #161512; padding: 20px; border-radius: 12px;
+    font-family: monospace; overflow-y: auto; margin-bottom: 20px; font-size: 15px;
+}
+.btn-danger {
+    padding: 18px; border: none; border-radius: 12px;
+    background: #ff4d4f; color: white; font-weight: bold; cursor: pointer;
+}
