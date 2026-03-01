@@ -2,90 +2,53 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GM CHESS OS - PREMIUM EDITION</title>
+    <title>GM CHESS OS - PREMIUM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="wallpaper-glow"></div>
+    <div class="bg-blur"></div>
 
-    <div id="cmos-modal" class="modal-overlay">
-        <div class="modal-box glass">
-            <div class="modal-header">
-                <span class="modal-title"><i class="fas fa-microchip"></i> CMOS problem</span>
-                <button class="modal-close" onclick="closeCmosModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Your CMOS battery is dead, please contact support to fix it.</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-primary" onclick="closeCmosModal()">Confirm</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="os-wrapper glass">
+    <div class="os-shell glass">
         <aside class="sidebar">
-            <div class="brand">
-                <div class="logo-box"><i class="fas fa-chess-knight"></i></div>
-                <span>GM<b>CHESS</b></span>
-            </div>
-            <nav class="menu">
-                <button class="menu-item active"><i class="fas fa-play"></i> Play</button>
-                <button class="menu-item"><i class="fas fa-puzzle-piece"></i> Puzzle</button>
-                <button class="menu-item"><i class="fas fa-microchip"></i> Analysis</button>
+            <div class="brand"><i class="fas fa-chess-queen"></i> GM CHESS</div>
+            <nav class="nav-menu">
+                <button class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</button>
+                <button class="nav-link" onclick="enterGame()"><i class="fas fa-play"></i> Play AI</button>
+                <button class="nav-link"><i class="fas fa-cog"></i> Settings</button>
             </nav>
-            <div class="sidebar-footer">
-                <button class="btn-icon-text"><i class="fas fa-cog"></i> Settings</button>
-                <div class="build-info">Build 2026.02.28</div>
-            </div>
+            <div class="os-footer">Build 2026.03.01</div>
         </aside>
 
-        <main class="content">
-            <header class="top-bar">
-                <h2>Dashboard</h2>
-                <div class="user-pill glass">
-                    <div class="avatar">G</div>
-                    <span>Guest User</span>
-                </div>
-            </header>
-
-            <div class="grid-container">
-                <div class="tile-card glass interact" onclick="enterGame('ai')">
-                    <div class="tile-glow"></div>
-                    <div class="tile-icon-bg"><i class="fas fa-robot"></i></div>
-                    <div class="tile-text">
-                        <h3>Stockfish 18</h3>
-                        <p>Challenge the world's strongest AI</p>
-                    </div>
-                    <div class="tile-arrow"><i class="fas fa-chevron-right"></i></div>
+        <main class="dashboard">
+            <h1>Dashboard</h1>
+            <div class="grid">
+                <div class="tile interact" onclick="enterGame()">
+                    <div class="tile-icon"><i class="fas fa-robot"></i></div>
+                    <h3>Stockfish 16.1</h3>
+                    <p>Đấu với AI mạnh nhất thế giới</p>
                 </div>
 
-                <div class="tile-card glass status-tile">
-                    <div class="status-header">SYSTEM STATUS</div>
-                    <div class="clock-display">
-                        <span id="os-time">--:--</span>
-                        <small id="os-date">--.--.----</small>
-                    </div>
-                    <div class="status-footer">
-                        <div class="indicator">
-                            <span class="dot" id="cmos-dot"></span>
-                            CMOS: <b id="cmos-status">Checking...</b>
-                        </div>
+                <div class="tile clock-tile">
+                    <span class="status-label">SYSTEM STATUS</span>
+                    <div id="os-time">00:00</div>
+                    <div id="os-date">01.01.2000</div>
+                    <div class="cmos-info">
+                        <span class="dot" id="cmos-dot"></span>
+                        CMOS: <b id="cmos-status">Checking...</b>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="game-area" style="display:none;">
-        <div class="game-layout">
+    <div id="game-screen" class="hidden">
+        <div class="game-container glass">
             <div id="myBoard"></div>
-            <div class="game-controls glass">
+            <div class="game-sidebar">
                 <div id="move-history"></div>
-                <button class="btn-danger" onclick="backToMenu()">QUIT GAME</button>
+                <button class="btn-quit" onclick="location.reload()">QUIT GAME</button>
             </div>
         </div>
     </div>
