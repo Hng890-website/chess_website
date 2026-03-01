@@ -2,40 +2,37 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>GM CHESS OS - LUXURY</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GM CHESS OS - FINAL FIX</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-mode"> <div class="wallpaper"></div>
-    
-    <div class="os-container glass">
-        <aside class="sidebar">
-            <div class="logo"><i class="fas fa-chess-knight"></i> GM CHESS</div>
-            <nav class="menu">
-                <button class="menu-item active"><i class="fas fa-home"></i> Dashboard</button>
-                <button class="menu-item" onclick="enterGame()"><i class="fas fa-play"></i> Play AI</button>
-                <button class="menu-item" onclick="toggleTheme()">
-                    <i class="fas fa-adjust"></i> <span id="theme-text">Dark Mode</span>
-                </button>
+<body class="dark-mode">
+    <div class="os-wrapper">
+        <aside class="sidebar glass">
+            <div class="brand">GM CHESS</div>
+            <nav class="nav-menu">
+                <button class="nav-btn active"><i class="fas fa-home"></i> Dashboard</button>
+                <button class="nav-btn" onclick="enterGame()"><i class="fas fa-play"></i> Play AI</button>
+                <button class="nav-btn" onclick="toggleTheme()"><i class="fas fa-circle-half-stroke"></i> Theme</button>
             </nav>
-            <div class="build-info">Build 2026.03.01</div>
         </aside>
 
         <main class="main-content">
-            <h1>Dashboard</h1>
-            <div class="widgets">
-                <div class="tile interact" onclick="enterGame()">
-                    <i class="fas fa-robot"></i>
+            <h1 class="page-title">Dashboard</h1>
+            <div class="widgets-container">
+                <div class="widget-card interact glass" onclick="enterGame()">
+                    <div class="icon-box"><i class="fas fa-robot"></i></div>
                     <h3>Stockfish 16.1</h3>
-                    <p>Start a new game</p>
+                    <p>Challenge the world's strongest AI</p>
                 </div>
 
-                <div class="tile clock-widget">
+                <div class="widget-card clock-box glass-dark">
                     <div id="os-time">00:00:00</div>
                     <div id="os-date">Loading date...</div>
-                    <div class="status">
-                        <span class="dot" id="cmos-dot"></span>
+                    <div class="status-line">
+                        <span id="cmos-dot"></span>
                         CMOS: <span id="cmos-status">Checking...</span>
                     </div>
                 </div>
@@ -43,19 +40,21 @@
         </main>
     </div>
 
-    <div id="game-screen" style="display:none;">
-        <div class="game-box glass">
+    <div id="game-screen" class="full-overlay" style="display:none;">
+        <div class="game-layout glass">
             <div id="myBoard"></div>
-            <div class="game-controls">
+            
+            <div class="game-sidebar">
+                <h3>Move History</h3>
                 <div id="move-history"></div>
-                <button class="btn-quit" onclick="location.reload()">QUIT</button>
+                <button class="btn-exit" onclick="location.reload()">EXIT GAME</button>
             </div>
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
