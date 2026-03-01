@@ -2,53 +2,53 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>GM CHESS OS - PREMIUM</title>
+    <title>GM CHESS OS - LUXURY</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="bg-blur"></div>
-
-    <div class="os-shell glass">
+<body class="dark-mode"> <div class="wallpaper"></div>
+    
+    <div class="os-container glass">
         <aside class="sidebar">
-            <div class="brand"><i class="fas fa-chess-queen"></i> GM CHESS</div>
-            <nav class="nav-menu">
-                <button class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</button>
-                <button class="nav-link" onclick="enterGame()"><i class="fas fa-play"></i> Play AI</button>
-                <button class="nav-link"><i class="fas fa-cog"></i> Settings</button>
+            <div class="logo"><i class="fas fa-chess-knight"></i> GM CHESS</div>
+            <nav class="menu">
+                <button class="menu-item active"><i class="fas fa-home"></i> Dashboard</button>
+                <button class="menu-item" onclick="enterGame()"><i class="fas fa-play"></i> Play AI</button>
+                <button class="menu-item" onclick="toggleTheme()">
+                    <i class="fas fa-adjust"></i> <span id="theme-text">Dark Mode</span>
+                </button>
             </nav>
-            <div class="os-footer">Build 2026.03.01</div>
+            <div class="build-info">Build 2026.03.01</div>
         </aside>
 
-        <main class="dashboard">
+        <main class="main-content">
             <h1>Dashboard</h1>
-            <div class="grid">
+            <div class="widgets">
                 <div class="tile interact" onclick="enterGame()">
-                    <div class="tile-icon"><i class="fas fa-robot"></i></div>
+                    <i class="fas fa-robot"></i>
                     <h3>Stockfish 16.1</h3>
-                    <p>Đấu với AI mạnh nhất thế giới</p>
+                    <p>Start a new game</p>
                 </div>
 
-                <div class="tile clock-tile">
-                    <span class="status-label">SYSTEM STATUS</span>
-                    <div id="os-time">00:00</div>
-                    <div id="os-date">01.01.2000</div>
-                    <div class="cmos-info">
+                <div class="tile clock-widget">
+                    <div id="os-time">00:00:00</div>
+                    <div id="os-date">Loading date...</div>
+                    <div class="status">
                         <span class="dot" id="cmos-dot"></span>
-                        CMOS: <b id="cmos-status">Checking...</b>
+                        CMOS: <span id="cmos-status">Checking...</span>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="game-screen" class="hidden">
-        <div class="game-container glass">
+    <div id="game-screen" style="display:none;">
+        <div class="game-box glass">
             <div id="myBoard"></div>
-            <div class="game-sidebar">
+            <div class="game-controls">
                 <div id="move-history"></div>
-                <button class="btn-quit" onclick="location.reload()">QUIT GAME</button>
+                <button class="btn-quit" onclick="location.reload()">QUIT</button>
             </div>
         </div>
     </div>
