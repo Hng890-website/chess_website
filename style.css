@@ -1,59 +1,65 @@
 :root {
-    --primary: #c9ff85;
-    --glass-bg: rgba(255, 255, 255, 0.05);
+    --bg: #0a0a0c;
     --text: #ffffff;
-    --bg-grad: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050505 100%);
+    --primary: #c9ff85;
+    --glass: rgba(255, 255, 255, 0.05);
 }
 
 body.light-mode {
-    --primary: #51a300;
-    --glass-bg: rgba(0, 0, 0, 0.05);
-    --text: #1d1d1f;
-    --bg-grad: radial-gradient(circle at 50% 50%, #ffffff 0%, #e0e0e0 100%);
+    --bg: #f0f2f5;
+    --text: #1c1e21;
+    --primary: #4b830d;
+    --glass: rgba(0, 0, 0, 0.05);
 }
 
 body {
-    margin: 0; height: 100vh; overflow: hidden;
-    color: var(--text); font-family: 'Segoe UI', sans-serif;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--bg-grad); transition: 0.5s;
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: 'Segoe UI', Tahoma, sans-serif; height: 100vh;
+    transition: 0.3s;
+}
+
+/* LAYOUT CHÍNH */
+.os-wrapper {
+    display: flex; height: 100vh; width: 100vw;
+}
+
+.sidebar {
+    width: 260px; padding: 40px 20px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.main-content {
+    flex: 1; padding: 60px;
 }
 
 .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(25px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 30px;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.4);
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
 }
 
-.os-container { width: 92vw; height: 86vh; display: flex; }
-
-/* SIDEBAR */
-.sidebar { width: 260px; padding: 40px; border-right: 1px solid rgba(255,255,255,0.05); }
-.logo { font-weight: 800; font-size: 22px; margin-bottom: 50px; color: var(--primary); }
-.menu-item {
-    width: 100%; padding: 14px; margin-bottom: 10px; border: none;
-    background: transparent; color: var(--text); text-align: left;
-    cursor: pointer; border-radius: 12px; transition: 0.3s; opacity: 0.7;
+.glass-dark {
+    background: #000; color: #fff;
+    border-radius: 20px; padding: 30px;
 }
-.menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.1); opacity: 1; }
 
-/* MAIN CONTENT */
-.main-content { flex: 1; padding: 60px; }
-.widgets { display: flex; gap: 30px; }
-.tile {
-    padding: 30px; border-radius: 24px; background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.05); transition: 0.4s;
+/* WIDGETS */
+.widgets-container { display: flex; gap: 25px; }
+.widget-card { width: 320px; padding: 30px; transition: 0.3s; }
+.interact:hover { transform: translateY(-5px); background: rgba(255,255,255,0.1); cursor: pointer; }
+
+/* ĐỒNG HỒ */
+#os-time { font-size: 55px; font-weight: 800; }
+#os-date { color: var(--primary); margin-bottom: 15px; font-weight: 600; }
+#cmos-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; background: #888; }
+
+/* GAME SCREEN */
+.full-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+    z-index: 1000; display: flex; align-items: center; justify-content: center;
 }
-.interact:hover { transform: translateY(-10px); border-color: var(--primary); }
-
-/* CLOCK WIDGET */
-.clock-widget { width: 380px; background: #000 !important; color: white !important; }
-#os-time { font-size: 58px; font-weight: 800; line-height: 1; }
-#os-date { color: var(--primary); font-weight: 600; margin: 15px 0; }
-
-/* GAME BOX */
-#game-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 1000; }
-.game-box { display: flex; gap: 30px; padding: 30px; }
-#myBoard { width: 550px; border: 5px solid #222; border-radius: 8px; }
+.game-layout { display: flex; gap: 40px; padding: 40px; }
+#myBoard { width: 550px; border: 5px solid #333; }
+.game-sidebar { width: 300px; display: flex; flex-direction: column; }
+#move-history { flex: 1; background: rgba(0,0,0,0.3); padding: 15px; overflow-y: auto; margin: 20px 0; font-family: monospace; }
+.btn-exit { background: #ff4d4f; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; }
